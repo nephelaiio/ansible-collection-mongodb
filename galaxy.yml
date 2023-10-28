@@ -1,0 +1,19 @@
+---
+namespace: nephelaiio
+name: mongodb
+version: 0.0.1
+readme: README.md
+authors:
+  - Ted Cook <teddyphreak@users.noreply.github.com>
+description: MongoDB collection
+license:
+  - MIT
+tags:
+  - mongodb
+  - mongos
+dependencies: {}
+repository: http://github.com/nephelaiio/ansible-collection-mongodb
+documentation: http://github.com/nephelaiio/ansible-collection-mongodb
+homepage: http://github.com/nephelaiio/ansible-collection-mongodb
+issues: http://github.com/nephelaiio/ansible-collection-mongodb
+build_ignore: []

@@ -15,6 +15,9 @@ molecule-docker = "^2.1.0"
 molecule = "^6.0.2"
 ansible-lint = { version = "^6.20.3", markers = "platform_system != 'Windows'" }
 
+[tool.poetry.group.dev.dependencies]
+netaddr = "^0.9.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

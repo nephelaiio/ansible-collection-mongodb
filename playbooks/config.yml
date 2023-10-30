@@ -1,0 +1,17 @@
+---
+- name: Deploy mongodb config replicaset
+  hosts: "{{ mongodb_config | default('mongodb_config') }}"
+  become: true
+  roles:
+    - plugins
+    - mongodb
+  vars:
+    mongodb_addresses: "{{ play_hosts | map('extract', hostvars, ['ansible_default_ipv4', 'address']) }}"
+    mongodb_members: "{{ mongodb_addresses | list }}"
+    mongodb_replicaset_members: "{{ mongodb_members | map('map_format', '%s:' + mongodb_port) | list }}"
+    mongodb_replicaset_name: "{{ mongos_replicaset_config_name | default('config') }}"
+    mongodb_sharding_role: configsvr
+  pre_tasks:
+    - name: Include collection variables
+      ansible.builtin.include_vars:
+        file: main.yml

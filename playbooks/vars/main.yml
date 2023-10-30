@@ -1,0 +1,4 @@
+---
+mongodb_port: '27017'
+mongos_service_name: 'mongos'
+mongodb_shell: 'mongosh'

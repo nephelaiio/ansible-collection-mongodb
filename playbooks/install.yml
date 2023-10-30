@@ -1,0 +1,9 @@
+---
+- name: Install config servers
+  import_playbook: nephelaiio.mongodb.config
+
+- name: Install shard servers
+  import_playbook: nephelaiio.mongodb.shard
+
+- name: Install mongos servers
+  import_playbook: nephelaiio.mongodb.mongos

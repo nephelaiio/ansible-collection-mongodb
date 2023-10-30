@@ -1,0 +1,17 @@
+---
+- name: Update apt repos
+  hosts: all
+  tasks:
+    - name: Update apt repos
+      ansible.builtin.apt:
+        update_cache: true
+      when: ansible_os_family == 'Debian'
+
+- name: Load kernel modules
+  hosts: localhost
+  become: true
+  tasks:
+    - name: Load required kernel modules into ansible controller
+      community.general.modprobe:
+        name: ip6table_filter
+        state: present

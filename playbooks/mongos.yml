@@ -27,10 +27,10 @@
             eval: "db.runCommand({listshards: 1})"
           register: _shard_query
 
-        - name: Register shard clusters
+        - name: Register shards
           community.mongodb.mongodb_shell:
             db: "admin"
-            eval: "sh.addshard('{{ _shard }}')"
+            eval: "sh.addShard('{{ _shard }}')"
           vars:
             _hosts: "{{ groups[item.group] | map('extract', hostvars, mongodb_address_attrs) }}"
             _members: "{{ _hosts | map('map_format', '%s:' + mongodb_port) }}"

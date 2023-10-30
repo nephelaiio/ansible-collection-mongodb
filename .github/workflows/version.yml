@@ -1,0 +1,24 @@
+---
+name: version
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: List all changed files
+        uses: tj-actions/changed-files@v40
+        with:
+          files: galaxy.yml
+        id: check
+
+      - name: Fail if version has not been updated
+        if: steps.check.outputs.test_any_changed != 'true'
+        run: exit 1

@@ -31,6 +31,9 @@ requirements:
 	@poetry run ansible-galaxy collection install \
 		--force-with-deps .
 
+build: requirements
+	@poetry run ansible-galaxy collection build
+
 dependency create prepare converge idempotence side-effect verify destroy login reset list:
 	MOLECULE_DOCKER_IMAGE=${MOLECULE_DOCKER_IMAGE} poetry run molecule $@ -s ${MOLECULE_SCENARIO}
 

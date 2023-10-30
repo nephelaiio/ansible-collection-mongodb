@@ -89,7 +89,7 @@ platforms:
       - /tmp
       - /opt
     groups:
-      - mongodb_shard
+      - mongodb_shard1
       - mongodb
   - name: shard02
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
@@ -103,7 +103,7 @@ platforms:
       - /tmp
       - /opt
     groups:
-      - mongodb_shard
+      - mongodb_shard1
       - mongodb
   - name: shard03
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
@@ -117,14 +117,9 @@ platforms:
       - /tmp
       - /opt
     groups:
-      - mongodb_shard
+      - mongodb_shard1
       - mongodb
 provisioner:
   name: ansible
-  inventory:
-    hosts:
-      mongodb_shard:
-        vars:
-          mongos_replicaset_shard_name: shard
 verifier:
   name: ansible

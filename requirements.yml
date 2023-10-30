@@ -4,3 +4,4 @@ collections:
   - name: nephelaiio.mongodb
     source: .
     type: dir
+  - name: community.mongodb

@@ -1,9 +1,16 @@
 ---
-- name: Install config servers
-  import_playbook: nephelaiio.mongodb.config
+- name: Deploy config cluster
+  ansible.builtin.import_playbook: nephelaiio.mongodb.config
 
-- name: Install shard servers
-  import_playbook: nephelaiio.mongodb.shard
+- name: Deploy shard1 cluster
+  ansible.builtin.import_playbook: nephelaiio.mongodb.shard
+  vars:
+    mongos_replicaset_shard_name: shard1
+    mongodb_shard: mongodb_shard1
 
-- name: Install mongos servers
-  import_playbook: nephelaiio.mongodb.mongos
+- name: Deploy mongos servers
+  ansible.builtin.import_playbook: nephelaiio.mongodb.mongos
+  vars:
+    mongodb_shard_clusters:
+      - name: shard1
+        group: mongodb_shard1

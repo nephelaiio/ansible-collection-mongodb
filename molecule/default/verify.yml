@@ -1,0 +1,37 @@
+    - name: register and verify shard cluster
+      run_once: true
+      block:
+
+        - name: register shard cluster
+          ansible.builtin.set_fact:
+            mongos_shard_cluster: "{{ _shard }}"
+          vars:
+            _attrs: ['ansible_default_ipv4', 'address']
+            _hosts: "{{ groups['shard'] | map('extract', hostvars, _attrs) }}"
+            _port: '27017'
+            _members: "{{ _hosts | map('map_format', '%s:' + _port) }}"
+            _shard: "{{ mongos_replicaset_shard_name }}/{{ _members | join(',') }}"
+
+        - name: query registered shards
+          community.mongodb.mongodb_shell:
+            db: "admin"
+            eval: "db.runcommand({listshards: 1})"
+          register: _shard_query
+
+        - name: register shard cluster
+          community.mongodb.mongodb_shell:
+            db: "admin"
+            eval: "sh.addshard('{{ mongos_shard_cluster }}')"
+          vars:
+            _shard_ids: "{{ _shard_query.transformed_output.shards | map(attribute='_id') | list }}"
+          when: mongos_replicaset_config_name not in _shard_ids
+
+        - name: refresh registered shards
+          community.mongodb.mongodb_shell:
+            db: "admin"
+            eval: "db.runcommand({listshards: 1})"
+          register: _shard_query
+
+        - name: debug shard list
+          ansible.builtin.debug:
+            msg: "{{ _shard_query.transformed_output.shards | map(attribute='_id') | list | join (',') }}"

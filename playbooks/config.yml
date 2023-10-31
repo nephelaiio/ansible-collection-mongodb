@@ -3,8 +3,8 @@
   hosts: "{{ mongodb_config | default('mongodb_config') }}"
   become: true
   roles:
-    - plugins
-    - mongodb
+    - nephelaiio.mongodb.plugins
+    - nephelaiio.mongodb.mongodb
   vars:
     mongodb_addresses: "{{ play_hosts | map('extract', hostvars, mongodb_address_attrs) }}"
     mongodb_members: "{{ mongodb_addresses | list }}"

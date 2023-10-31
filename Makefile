@@ -35,8 +35,8 @@ requirements: install
 		--role-file ${ROLE_FILE}
 	@poetry run ansible-galaxy collection install \
 		--force-with-deps .
-	@find ${ROLE_DIR} -wholename "*meta/main.yml" | xargs sed -ie 's/nephelaiio\.plugins/nephelaiio.mongodb.plugins/g'
-	@find ${ROLE_DIR} -wholename "*meta/main.yml" | xargs sed -ie 's/nephelaiio\.mongodb_repo/nephelaiio.mongodb.repo/g'
+	@grep -Rl "nephelaiio\.plugins" ${ROLE_DIR} | xargs sed -rL -ie 's/nephelaiio\.plugins/nephelaiio.mongodb.plugins/g'
+	@grep -Rl "nephelaiio\.mongodb_repo" ${ROLE_DIR} | xargs sed -rL -ie 's/nephelaiio\.mongodb_repo/nephelaiio.mongodb.repo/g'
 	@find ${ROLE_DIR} -type d -name filter_plugins | xargs -r cp -a -t ${PLUGIN_DIR}/
 	@find ${ROLE_DIR} -type d -name test_plugins | xargs -r cp -a -t ${PLUGIN_DIR}/
 	@rm -rf ${ROLE_DIR}/plugins

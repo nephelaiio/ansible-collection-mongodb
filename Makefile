@@ -8,6 +8,7 @@ GITHUB_ORG = $$(echo ${GITHUB_REPOSITORY} | cut -d/ -f 1)
 GITHUB_REPO = $$(echo ${GITHUB_REPOSITORY} | cut -d/ -f 2)
 REQUIREMENTS = requirements.yml
 ROLE_DIR = roles
+PLUGIN_DIR = plugins
 ROLE_FILE = roles.yml
 COLLECTION_NAMESPACE = $$(yq '.namespace' < galaxy.yml)
 COLLECTION_NAME = $$(yq '.name' < galaxy.yml)
@@ -27,14 +28,19 @@ lint: install
 
 requirements: install
 	@rm -rf ${ROLE_DIR}/*
+	@rm -rf ${PLUGIN_DIR}/*
 	@poetry run ansible-galaxy role install \
 		--force --no-deps \
 		--roles-path ${ROLE_DIR} \
 		--role-file ${ROLE_FILE}
 	@poetry run ansible-galaxy collection install \
 		--force-with-deps .
-	@find roles -wholename "*meta/main.yml" | xargs sed -ie 's/nephelaiio\.plugins/nephelaiio.mongodb.plugins/g'
-	@find roles -wholename "*meta/main.yml" | xargs sed -ie 's/nephelaiio\.mongodb_repo/nephelaiio.mongodb.repo/g'
+	@find ${ROLE_DIR} -wholename "*meta/main.yml" | xargs sed -ie 's/nephelaiio\.plugins/nephelaiio.mongodb.plugins/g'
+	@find ${ROLE_DIR} -wholename "*meta/main.yml" | xargs sed -ie 's/nephelaiio\.mongodb_repo/nephelaiio.mongodb.repo/g'
+	@find ${ROLE_DIR} -type d -name filter_plugins | xargs -r cp -a -t ${PLUGIN_DIR}/
+	@find ${ROLE_DIR} -type d -name test_plugins | xargs -r cp -a -t ${PLUGIN_DIR}/
+	@rm -rf ${ROLE_DIR}/plugins
+	@grep -Rl sorted_get ${ROLE_DIR} | xargs -rL 1 sed -ie 's/sorted_get/nephelaiio.mongodb.sorted_get/g'
 
 build: requirements
 	@poetry run ansible-galaxy collection build

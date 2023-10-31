@@ -39,8 +39,7 @@ requirements: install
 	@grep -Rl "nephelaiio\.mongodb_repo" ${ROLE_DIR} | xargs -rL 1 sed -ie 's/nephelaiio\.mongodb_repo/nephelaiio.mongodb.repo/g'
 	@find ${ROLE_DIR} -type d -name filter_plugins | xargs -r cp -a -t ${PLUGIN_DIR}/
 	@find ${ROLE_DIR} -type d -name test_plugins | xargs -r cp -a -t ${PLUGIN_DIR}/
-	@rm -rf ${ROLE_DIR}/plugins
-	@grep -Rl sorted_get ${ROLE_DIR} | xargs -rL 1 sed -ie 's/sorted_get/nephelaiio.mongodb.sorted_get/g'
+	@grep --ignore ${ROLE_DIR}/plugins -Rl sorted_get ${ROLE_DIR} | xargs -rL 1 sed -ie 's/sorted_get/nephelaiio.mongodb.sorted_get/g'
 	@find ./ -name "*.ymle*" -delete
 
 build: requirements

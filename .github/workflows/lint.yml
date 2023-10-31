@@ -2,20 +2,16 @@
 name: lint
 
 on:
-
   pull_request:
     branches:
       - master
 
 defaults:
-
   run:
     working-directory: 'nephelaiio.mongodb'
 
 jobs:
-
   lint:
-
     name: lint
     runs-on: ubuntu-latest
     steps:

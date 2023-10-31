@@ -9,6 +9,8 @@ GITHUB_REPO = $$(echo ${GITHUB_REPOSITORY} | cut -d/ -f 2)
 REQUIREMENTS = requirements.yml
 ROLE_DIR = roles
 ROLE_FILE = roles.yml
+COLLECTION_NAMESPACE = $$(yq '.namespace' < galaxy.yml)
+COLLECTION_NAME = $$(yq '.name' < galaxy.yml)
 
 all: install version lint test
 
@@ -17,12 +19,13 @@ test: lint
 
 install:
 	@type poetry >/dev/null || pip3 install poetry
+	@type yq || sudo apt-get install -y yq
 	@poetry install
 
 lint: install
 	poetry run yamllint .
 
-requirements:
+requirements: install
 	@rm -rf ${ROLE_DIR}/*
 	@poetry run ansible-galaxy role install \
 		--force --no-deps \
@@ -43,8 +46,12 @@ ignore:
 clean: destroy reset
 	@poetry env remove $$(which python) >/dev/null 2>&1 || exit 0
 
-publish:
-	@echo not implemented yet || exit 1
+publish: build
+	@echo publishing repository ${GITHUB_REPOSITORY}
+	@echo GITHUB_ORGANIZATION=${GITHUB_ORG}
+	@echo GITHUB_REPOSITORY=${GITHUB_REPO}
+	@find ./ -name "${COLLECTION_NAMESPACE}-${COLLECTION_NAME}.*.tar.gz" | \
+		xargs poetry run ansible-galaxy collection publish --api-key ${GALAXY_API_KEY}
 
 version:
 	@poetry run molecule --version

@@ -26,6 +26,7 @@
             db: "admin"
             eval: "db.runCommand({listshards: 1})"
           register: _shard_query
+          changed_when: false
 
         - name: Register shards
           community.mongodb.mongodb_shell:
@@ -46,6 +47,7 @@
             db: "admin"
             eval: "db.runCommand({listshards: 1})"
           register: _shard_query
+          changed_when: false
 
         - name: Debug shard cluster list
           ansible.builtin.debug:

@@ -15,13 +15,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: List all changed files
-        uses: tj-actions/changed-files@v40
-        with:
-          since_last_remote_commit: true
-          files: galaxy.yml
-        id: check
+      - name: Check if galaxy.yml has been modified
+        run: |
+          # Get a list of all modified files in this PR
+          FILES_CHANGED=$(git diff --name-only HEAD^ HEAD)
+          echo "Files changed: $FILES_CHANGED"
 
-      - name: Fail if version has not been updated
-        if: steps.check.outputs.test_any_changed != 'true'
-        run: exit 1
+          # Check if galaxy.yml is in the list of changed files
+          if [[ $FILES_CHANGED != *"galaxy.yml"* ]]; then
+            echo "Error: galaxy.yml has not been modified."
+            exit 1
+          fi

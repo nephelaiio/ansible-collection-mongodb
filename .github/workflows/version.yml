@@ -16,6 +16,7 @@ jobs:
       - name: List all changed files
         uses: tj-actions/changed-files@v40
         with:
+          since_last_remote_commit: true
           files: galaxy.yml
         id: check
 

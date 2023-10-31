@@ -54,6 +54,9 @@ jobs:
       - name: Debug test environment
         run: make debug
 
+      - name: Install role requirements
+        run: make requirements
+
       - name: Run molecule tests.
         run: make test
         env:

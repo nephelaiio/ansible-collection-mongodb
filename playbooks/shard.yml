@@ -1,0 +1,17 @@
+---
+- name: Deploy mongodb shard replicaset
+  hosts: "{{ mongodb_shard | default('mongodb_shard') }}"
+  become: true
+  roles:
+    - nephelaiio.mongodb.plugins
+    - nephelaiio.mongodb.mongodb
+  vars:
+    mongodb_addresses: "{{ play_hosts | map('extract', hostvars, mongodb_address_attrs) }}"
+    mongodb_members: "{{ mongodb_addresses | list }}"
+    mongodb_replicaset_members: "{{ mongodb_members | map('map_format', '%s:' + mongodb_port) | list }}"
+    mongodb_replicaset_name: "{{ mongos_replicaset_shard_name }}"
+    mongodb_sharding_role: shardsvr
+  pre_tasks:
+    - name: Include collection variables
+      ansible.builtin.include_vars:
+        file: main.yml

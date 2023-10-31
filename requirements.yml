@@ -1,6 +1,5 @@
 ---
-roles:
-  - name: nephelaiio.plugins
+roles: []
 collections:
   - name: nephelaiio.mongodb
     source: .

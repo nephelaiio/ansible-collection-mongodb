@@ -36,9 +36,9 @@ requirements: install
 	@poetry run ansible-galaxy collection install \
 		--force-with-deps .
 	@\grep -Rl "nephelaiio\.plugins" ${ROLE_DIR} | xargs -rL 1 sed -ie 's/nephelaiio\.plugins/nephelaiio.mongodb.plugins/g'
+	@cp -a ${ROLE_DIR}/plugins/filter_plugins ${PLUGIN_DIR}/filter
+	@cp -a ${ROLE_DIR}/plugins/test_plugins ${PLUGIN_DIR}/test
 	@\grep -Rl "nephelaiio\.mongodb_repo" ${ROLE_DIR} | xargs -rL 1 sed -ie 's/nephelaiio\.mongodb_repo/nephelaiio.mongodb.repo/g'
-	@\find ${ROLE_DIR} -type d -name filter_plugins | xargs -r cp -a -t ${PLUGIN_DIR}/
-	@\find ${ROLE_DIR} -type d -name test_plugins | xargs -r cp -a -t ${PLUGIN_DIR}/
 	@\grep --exclude-dir ${ROLE_DIR}/plugins sorted_get -Rl ${ROLE_DIR} | xargs -rL 1 sed -ie 's/sorted_get/nephelaiio.mongodb.sorted_get/g'
 	@\find ./ -name "*.ymle*" -delete
 

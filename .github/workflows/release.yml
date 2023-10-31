@@ -1,9 +1,9 @@
 ---
 name: Release
 on:
-  pull_request:
-    branches:
-      - master
+  push:
+    tags:
+      - "*"
 
 defaults:
   run:
@@ -31,4 +31,4 @@ jobs:
         run: sudo apt-get install -y make
 
       - name: Release collection
-        run: make release
+        run: make publish

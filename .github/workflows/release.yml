@@ -32,3 +32,5 @@ jobs:
 
       - name: Release collection
         run: make publish
+        env:
+          GALAXY_API_KEY: "${{ secrets.GALAXY_API_KEY }}"

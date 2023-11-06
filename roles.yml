@@ -2,10 +2,10 @@
 roles:
   - name: repo
     src: https://github.com/nephelaiio/ansible-role-mongodb-repo.git
-    version: 0.0.13
+    version: 0.0.15
   - name: mongos
     src: https://github.com/nephelaiio/ansible-role-mongos.git
-    version: 0.0.2
+    version: 0.0.3
   - name: mongodb
     src: https://github.com/wpnops/ansible-role-mongodb.git
     version: 0.1.4

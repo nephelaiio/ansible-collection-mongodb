@@ -41,6 +41,7 @@ requirements: install
 	@cp -a ${ROLE_DIR}/plugins/test_plugins ${PLUGIN_DIR}/test
 	@\grep -Rl "nephelaiio\.mongodb_repo" ${ROLE_DIR} | xargs -rL 1 sed -ie 's/nephelaiio\.mongodb_repo/nephelaiio.mongodb.repo/g'
 	@\grep --exclude-dir ${ROLE_DIR}/plugins sorted_get -Rl ${ROLE_DIR} | xargs -rL 1 sed -ie 's/sorted_get/nephelaiio.mongodb.sorted_get/g'
+	@\grep --exclude-dir ${ROLE_DIR}/plugins sorted_get -Rl ${ROLE_DIR} | xargs -rL 1 sed -ie 's/map_format/nephelaiio.mongodb.map_format/g'
 	@\find ./ -name "*.ymle*" -delete
 
 build: requirements

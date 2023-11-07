@@ -20,7 +20,7 @@ jobs:
       matrix:
         scenario:
           - name: install
-          - name: online
+          - name: offline
         image:
           - name: ubuntu2204
             command: /lib/systemd/systemd

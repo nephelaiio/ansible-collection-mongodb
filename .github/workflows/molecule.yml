@@ -19,7 +19,8 @@ jobs:
     strategy:
       matrix:
         scenario:
-          - name: default
+          - name: install
+          - name: offline
         image:
           - name: ubuntu2204
             command: /lib/systemd/systemd

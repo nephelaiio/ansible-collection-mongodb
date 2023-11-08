@@ -1,5 +1,5 @@
 ---
-- name: Import install playbook
+- name: Verify shard registration
   hosts: mongodb_mongos
   tasks:
     - name: Verify shard registration

@@ -123,7 +123,7 @@ provisioner:
   name: ansible
   playbooks:
     converge: ../common/offline.yml
-    side-effect: ../common/online.yml
+    side_effect: ../common/online.yml
     verify: ../common/verify.yml
   config_options:
     defaults:

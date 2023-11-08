@@ -1,0 +1,12 @@
+---
+- name: Start mongos services
+  hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
+  tasks:
+    - name: Include mongos service tasks
+      ansible.builtin.include_role:
+        name: nephelaiio.mongodb.mongos
+        tasks_from: service
+      vars:
+        mongos_service_state: started
+      apply:
+        become: true

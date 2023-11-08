@@ -122,9 +122,8 @@ platforms:
 provisioner:
   name: ansible
   playbooks:
-    prepare: ../common/prepare.yml
-    converge: ../common/install.yml
-    side-effect: ../common/install.yml
+    converge: ../common/offline.yml
+    side-effect: ../common/online.yml
     verify: ../common/verify.yml
   config_options:
     defaults:

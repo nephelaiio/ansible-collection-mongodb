@@ -21,6 +21,7 @@ jobs:
         scenario:
           - name: install
           - name: offline
+          - name: online
         image:
           - name: ubuntu2204
             command: /lib/systemd/systemd

@@ -1,0 +1,32 @@
+---
+- name: Verify mongos service
+  hosts: mongodb_mongos
+  tasks:
+    - name: Collect service facts
+      ansible.builtin.service_facts:
+
+    - name: Verify service run status
+      ansible.builtin.fail:
+        msg: "Mongos service is running"
+      when: services['mongos.service'].state != "inactive"
+
+    - name: Verify service boot status
+      ansible.builtin.fail:
+        msg: "Mongos service is enabled"
+      when: services['mongos.service'].status != "disabled"
+
+- name: Verify mongodb service
+  hosts: mongodb_mongos:mongodb_config:mongodb_shard1
+  tasks:
+    - name: Collect service facts
+      ansible.builtin.service_facts:
+
+    - name: Verify service run status
+      ansible.builtin.fail:
+        msg: "Mongos service is running"
+      when: services['mongod.service'].state != "inactive"
+
+    - name: Verify service boot status
+      ansible.builtin.fail:
+        msg: "Mongos service is enabled"
+      when: services['mongod.service'].status != "disabled"

@@ -1,0 +1,25 @@
+---
+- name: Stop mongos services
+  hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
+  become: true
+  tasks:
+    - name: Include mongos service tasks
+      ansible.builtin.include_role:
+        name: nephelaiio.mongodb.mongos
+        tasks_from: service
+      vars:
+        mongos_service_state: stopped
+
+
+- name: Stop mongodb config services
+  hosts:
+    - "{{ mongodb_config | default('mongodb_config') }}"
+    - "{{ mongodb_shard | default('mongodb_shard') }}"
+  become: true
+  tasks:
+    - name: Include mongos service tasks
+      ansible.builtin.include_role:
+        name: nephelaiio.mongodb.mongodb
+        tasks_from: service
+      vars:
+        mongodb_service_state: stopped

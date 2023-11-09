@@ -22,6 +22,7 @@ jobs:
           - name: install
           - name: offline
           - name: online
+          - name: stop
         image:
           - name: ubuntu2204
             command: /lib/systemd/systemd

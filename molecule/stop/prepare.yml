@@ -1,0 +1,6 @@
+---
+- name: Include shared prepare play
+  ansible.builtin.import_playbook: ../common/prepare.yml
+
+- name: Include shared install play
+  ansible.builtin.import_playbook: ../common/install.yml

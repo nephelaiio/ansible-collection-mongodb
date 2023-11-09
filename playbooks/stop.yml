@@ -11,10 +11,10 @@
         mongos_service_state: stopped
 
 
-- name: Stop mongodb config services
+- name: Stop mongod services
   hosts:
     - "{{ mongodb_config | default('mongodb_config') }}"
-    - "{{ mongodb_shard | default('mongodb_shard') }}"
+    - "{{ mongodb_shard1 | default('mongodb_shard1') }}"
   become: true
   tasks:
     - name: Include mongos service tasks

@@ -1,16 +1,22 @@
 ---
 - name: Verify mongos service
   hosts: mongodb_mongos
+  vars:
+    _service: mongos.service
   tasks:
     - name: Collect service facts
       ansible.builtin.service_facts:
 
+    - name: Debug Mongos service status
+      ansible.builtin.debug:
+        msg: "{{ services[_service] }}"
+
     - name: Verify service run status
       ansible.builtin.fail:
         msg: "Mongos service is running"
-      when: services['mongos.service'].state != "inactive"
+      when: services[_service].state != "inactive"
 
     - name: Verify service boot status
       ansible.builtin.fail:
         msg: "Mongos service is enabled"
-      when: services['mongos.service'].status != "disabled"
+      when: services[_service].status != "disabled"

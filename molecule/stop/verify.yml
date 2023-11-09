@@ -42,3 +42,4 @@
       ansible.builtin.fail:
         msg: "MongoDB service is enabled"
       when: services[_service].status != "disabled"
+      tags: never

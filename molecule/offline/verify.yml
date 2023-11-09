@@ -14,7 +14,7 @@
     - name: Verify service run status
       ansible.builtin.fail:
         msg: "Mongos service is running"
-      when: services[_service].state != "inactive"
+      when: services[_service].state not in ["inactive", "stopped"]
 
     - name: Verify service boot status
       ansible.builtin.fail:

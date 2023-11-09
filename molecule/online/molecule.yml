@@ -7,7 +7,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: mongos01
+  - name: mongodb-online-mongos01
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -21,7 +21,7 @@ platforms:
     groups:
       - mongodb_mongos
       - mongodb
-  - name: mongos02
+  - name: mongodb-online-mongos02
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -35,7 +35,7 @@ platforms:
     groups:
       - mongodb_mongos
       - mongodb
-  - name: config01
+  - name: mongodb-online-config01
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -49,7 +49,7 @@ platforms:
     groups:
       - mongodb_config
       - mongodb
-  - name: config02
+  - name: mongodb-online-config02
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -63,7 +63,7 @@ platforms:
     groups:
       - mongodb_config
       - mongodb
-  - name: config03
+  - name: mongodb-online-config03
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -77,7 +77,7 @@ platforms:
     groups:
       - mongodb_config
       - mongodb
-  - name: shard01
+  - name: mongodb-online-shard01
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -91,7 +91,7 @@ platforms:
     groups:
       - mongodb_shard1
       - mongodb
-  - name: shard02
+  - name: mongodb-online-shard02
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -105,7 +105,7 @@ platforms:
     groups:
       - mongodb_shard1
       - mongodb
-  - name: shard03
+  - name: mongodb-online-shard03
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host

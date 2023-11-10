@@ -20,7 +20,7 @@ An [ansible collection](https://galaxy.ansible.com/ui/repo/published/nephelaiio/
 
 ## Testing
 
-Please make sure your environment has [docker](https://www.docker.com) installed in order to run role validation tests. Additional python dependencies are listed in the [requirements file](https://github.com/nephelaiio/ansible-role-requirements/blob/master/requirements.txt)
+Please make sure your environment has [docker](https://www.docker.com) installed in order to run role validation tests.
 
 Role is tested against the following distributions (docker images):
 

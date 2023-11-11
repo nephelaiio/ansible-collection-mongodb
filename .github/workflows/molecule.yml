@@ -24,6 +24,7 @@ jobs:
           - name: online
           - name: stop
           - name: start
+          - name: restart
         image:
           - name: ubuntu2204
             command: /lib/systemd/systemd

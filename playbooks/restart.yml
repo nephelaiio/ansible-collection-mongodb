@@ -1,0 +1,27 @@
+---
+- name: Restart mongod services
+  serial: 1
+  hosts:
+    - "{{ mongodb_config | default('mongodb_config') }}"
+    - "{{ mongodb_shard1 | default('mongodb_shard1') }}"
+  become: true
+  tasks:
+    - name: Include mongos service tasks
+      ansible.builtin.include_role:
+        name: nephelaiio.mongodb.mongodb
+        tasks_from: service
+      vars:
+        mongos_service_state: restarted
+
+
+- name: Restart mongos services
+  hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
+  become: true
+  serial: 1
+  tasks:
+    - name: Include mongos service tasks
+      ansible.builtin.include_role:
+        name: nephelaiio.mongodb.mongos
+        tasks_from: service
+      vars:
+        mongos_service_state: restarted

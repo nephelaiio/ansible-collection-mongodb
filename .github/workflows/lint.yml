@@ -6,10 +6,6 @@ on:
     branches:
       - master
 
-defaults:
-  run:
-    working-directory: 'nephelaiio.mongodb'
-
 jobs:
   lint:
     name: lint
@@ -17,8 +13,6 @@ jobs:
     steps:
       - name: Check out the codebase
         uses: actions/checkout@v4
-        with:
-          path: 'nephelaiio.mongodb'
 
       - name: Set up python 3
         uses: actions/setup-python@v4

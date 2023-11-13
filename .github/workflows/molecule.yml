@@ -8,10 +8,6 @@ on:
   schedule:
     - cron: "0 5 * * 5"
 
-defaults:
-  run:
-    working-directory: 'nephelaiio.mongodb'
-
 jobs:
   molecule:
     name: molecule
@@ -35,8 +31,6 @@ jobs:
     steps:
       - name: Check out the codebase
         uses: actions/checkout@v4
-        with:
-          path: 'nephelaiio.mongodb'
 
       - name: Set up python 3
         uses: actions/setup-python@v4

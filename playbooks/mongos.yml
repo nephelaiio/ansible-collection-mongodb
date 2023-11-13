@@ -6,6 +6,8 @@
 - name: Deploy mongodb mongos servers
   hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
   become: true
+  collections:
+    - nephelaiio.plugins
   roles:
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongos

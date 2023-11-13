@@ -2,8 +2,9 @@
 - name: Deploy mongodb config replicaset
   hosts: "{{ mongodb_config | default('mongodb_config') }}"
   become: true
+  collections:
+    - nephelaiio.plugins
   roles:
-    - nephelaiio.mongodb.plugins
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongodb
   vars:

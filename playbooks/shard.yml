@@ -2,8 +2,9 @@
 - name: Deploy mongodb shard replicaset
   hosts: "{{ mongodb_shard | default('mongodb_shard') }}"
   become: true
+  collections:
+    - nephelaiio.plugins
   roles:
-    - nephelaiio.mongodb.plugins
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongodb
   vars:

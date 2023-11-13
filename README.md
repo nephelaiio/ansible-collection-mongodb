@@ -1,7 +1,7 @@
 # Ansible Collection - nephelaiio.mongodb
 
 [![Build Status](https://github.com/nephelaiio/ansible-collection-mongodb/actions/workflows/molecule.yml/badge.svg)](https://github.com/nephelaiio/ansible-collection-mongodb/actions/wofklows/molecule.yml)
-[![Ansible Galaxy](http://img.shields.io/badge/ansible--galaxy-nephelaiio.mongodb.vim-blue.svg)](https://galaxy.ansible.com/ui/repo/published/nephelaiio/mongodb/)
+[![Ansible Galaxy](http://img.shields.io/badge/ansible--galaxy-nephelaiio.mongodb-blue.svg)](https://galaxy.ansible.com/ui/repo/published/nephelaiio/mongodb/)
 
 An [ansible collection](https://galaxy.ansible.com/ui/repo/published/nephelaiio/mongodb/) to install and manage MongoDB clusters
 

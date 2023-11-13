@@ -12,7 +12,7 @@ tags:
   - mongodb
   - mongos
 dependencies:
-  "nephelaiio.mongodb": "*"
+  "nephelaiio.plugins": "*"
 repository: http://github.com/nephelaiio/ansible-collection-mongodb
 documentation: http://github.com/nephelaiio/ansible-collection-mongodb
 homepage: http://github.com/nephelaiio/ansible-collection-mongodb

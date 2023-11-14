@@ -1,8 +1,13 @@
 ---
-- name: Restart config services
+- name: Update config nodes
   serial: 1
   hosts: "{{ mongodb_config | default('mongodb_config') }}"
   become: true
+  roles:
+    - nephelaiio.mongodb.update
+  vars:
+    update_reboot: false
+    update_cache_valid_time: 1
   pre_tasks:
     - name: Include collection variables
       ansible.builtin.include_vars:
@@ -12,8 +17,9 @@
       ansible.builtin.include_role:
         name: nephelaiio.mongodb.mongodb
         tasks_from: service
-      vars:
-        mongos_service_state: restarted
+
+    - name: Reboot node
+      ansible.builtin.reboot:
 
     - name: Wait for replica set to stabilize
       community.mongodb.mongodb_status:
@@ -23,10 +29,15 @@
         interval: "{{ mongodb_reconfig_interval }}"
 
 
-- name: Restart shard1 services
+- name: Update shard1 nodes
   serial: 1
   hosts: "{{ mongodb_shard1 | default('mongodb_shard1') }}"
   become: true
+  roles:
+    - nephelaiio.mongodb.update
+  vars:
+    update_reboot: false
+    update_cache_valid_time: 1
   pre_tasks:
     - name: Include collection variables
       ansible.builtin.include_vars:
@@ -36,21 +47,27 @@
       ansible.builtin.include_role:
         name: nephelaiio.mongodb.mongodb
         tasks_from: service
-      vars:
-        mongos_service_state: restarted
+
+    - name: Reboot node
+      ansible.builtin.reboot:
 
     - name: Wait for replica set to stabilize
       community.mongodb.mongodb_status:
-        replica_set: "{{ mongos_replicaset_shard1_name | default('shard1') }}"
+        replica_set: "{{ mongos_replicaset_config_name | default('config') }}"
         validate: minimal
         poll: "{{ mongodb_reconfig_poll }}"
         interval: "{{ mongodb_reconfig_interval }}"
 
 
-- name: Restart mongos services
+- name: Update mongos nodes
   hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
   become: true
   serial: 1
+  roles:
+    - nephelaiio.mongodb.update
+  vars:
+    update_reboot: false
+    update_cache_valid_time: 1
   pre_tasks:
     - name: Include collection variables
       ansible.builtin.include_vars:
@@ -60,8 +77,9 @@
       ansible.builtin.include_role:
         name: nephelaiio.mongodb.mongos
         tasks_from: service
-      vars:
-        mongos_service_state: restarted
+
+    - name: Reboot node
+      ansible.builtin.reboot:
 
     - name: Check mongos cluster status
       community.mongodb.mongodb_shell:

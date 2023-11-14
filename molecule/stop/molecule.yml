@@ -136,7 +136,6 @@ scenario:
     - create
     - prepare
     - converge
-    - idempotence
     - verify
     - cleanup
     - destroy

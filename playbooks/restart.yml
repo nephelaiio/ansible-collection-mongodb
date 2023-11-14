@@ -1,10 +1,12 @@
 ---
-- name: Restart mongod services
+- name: Restart config services
   serial: 1
-  hosts:
-    - "{{ mongodb_config | default('mongodb_config') }}"
-    - "{{ mongodb_shard1 | default('mongodb_shard1') }}"
+  hosts: "{{ mongodb_config | default('mongodb_config') }}"
   become: true
+  pre_tasks:
+    - name: Include collection variables
+      ansible.builtin.include_vars:
+        file: main.yml
   tasks:
     - name: Include mongos service tasks
       ansible.builtin.include_role:
@@ -13,11 +15,46 @@
       vars:
         mongos_service_state: restarted
 
+    - name: Wait for replica set to stabilize
+      community.mongodb.mongodb_status:
+        replica_set: "{{ mongos_replicaset_config_name | default('config') }}"
+        validate: minimal
+        poll: "{{ mongodb_reconfig_poll }}"
+        interval: "{{ mongodb_reconfig_interval }}"
+
+
+- name: Restart shard1 services
+  serial: 1
+  hosts: "{{ mongodb_shard1 | default('mongodb_shard1') }}"
+  become: true
+  pre_tasks:
+    - name: Include collection variables
+      ansible.builtin.include_vars:
+        file: main.yml
+  tasks:
+    - name: Include mongos service tasks
+      ansible.builtin.include_role:
+        name: nephelaiio.mongodb.mongodb
+        tasks_from: service
+      vars:
+        mongos_service_state: restarted
+
+    - name: Wait for replica set to stabilize
+      community.mongodb.mongodb_status:
+        replica_set: "{{ mongos_replicaset_shard1_name | default('shard1') }}"
+        validate: minimal
+        poll: "{{ mongodb_reconfig_poll }}"
+        interval: "{{ mongodb_reconfig_interval }}"
+
 
 - name: Restart mongos services
   hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
   become: true
   serial: 1
+  pre_tasks:
+    - name: Include collection variables
+      ansible.builtin.include_vars:
+        file: main.yml
   tasks:
     - name: Include mongos service tasks
       ansible.builtin.include_role:
@@ -25,3 +62,10 @@
         tasks_from: service
       vars:
         mongos_service_state: restarted
+
+    - name: Check mongos cluster status
+      community.mongodb.mongodb_shell:
+        login_database: "admin"
+        eval: "sh.status()"
+      retries: "{{ mongodb_reconfig_poll }}"
+      delay: "{{ mongodb_reconfig_interval }}"

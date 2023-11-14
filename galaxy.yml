@@ -1,7 +1,7 @@
 ---
 namespace: nephelaiio
 name: mongodb
-version: 0.0.15
+version: 0.0.16
 readme: README.md
 authors:
   - Ted Cook <teddyphreak@users.noreply.github.com>

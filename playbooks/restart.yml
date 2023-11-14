@@ -69,3 +69,4 @@
         eval: "sh.status()"
       retries: "{{ mongodb_reconfig_poll }}"
       delay: "{{ mongodb_reconfig_interval }}"
+      changed_when: false

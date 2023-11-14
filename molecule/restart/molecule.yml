@@ -139,6 +139,7 @@ scenario:
     - create
     - prepare
     - converge
+    - side_effect
     - verify
     - cleanup
     - destroy

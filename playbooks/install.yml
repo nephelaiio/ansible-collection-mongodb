@@ -1,6 +1,8 @@
 ---
 - name: Deploy config cluster
   ansible.builtin.import_playbook: nephelaiio.mongodb.config
+  vars:
+    mongodb_config: "{{ mongodb_config_group | default('mongodb_config') }}"
 
 - name: Deploy shard1 cluster
   ansible.builtin.import_playbook: nephelaiio.mongodb.shard
@@ -11,6 +13,7 @@
 - name: Deploy mongos servers
   ansible.builtin.import_playbook: nephelaiio.mongodb.mongos
   vars:
+    mongodb_config: "{{ mongodb_config_group | default('mongodb_config') }}"
     mongodb_shard_clusters:
       - name: "{{ mongodb_shard1_name | default('shard1') }}"
         group: "{{ mongodb_shard1_group | default('mongodb_shard1') }}"

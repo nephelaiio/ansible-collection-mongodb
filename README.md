@@ -18,6 +18,11 @@ An [ansible collection](https://galaxy.ansible.com/ui/repo/published/nephelaiio/
 * nephelaiio.mongodb.stop: Stop all cluster services
 * nephelaiio.mongodb.start: Start all cluster services
 
+## To do
+* Auto-detect package pins and configure locks when requested in member roles
+* Refactor install play to allow for cluster upgrades with package pin. Requires setting serial execution conditionally on cluster status check (1 on OK, 100% on fail)
+* Configure oplogMinRetentionHours to 24h
+
 ## Testing
 
 Please make sure your environment has [docker](https://www.docker.com) installed in order to run role validation tests.

@@ -8,7 +8,7 @@ roles:
     version: 0.0.14
   - name: mongodb
     src: https://github.com/wpnops/ansible-role-mongodb.git
-    version: 0.1.10
+    version: 0.1.11
     scm: git
   - name: update
     src: https://github.com/robertdebock/ansible-role-update.git

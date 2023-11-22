@@ -3,7 +3,7 @@
   hosts: "{{ mongodb | default('mongodb') }}"
 
 
-- name: Deploy mongodb mongos servers
+- name: Deploy MongoDB mongos servers
   hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
   become: true
   serial: 1
@@ -20,7 +20,7 @@
         file: main.yml
 
 
-- name: Configure mongodb cluster
+- name: Configure MongoDB cluster
   hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
   become: true
   vars:
@@ -43,6 +43,12 @@
           register: _shard_query
           changed_when: false
 
+        - name: Debug shard cluster list
+          ansible.builtin.debug:
+            msg: "Cluster shards: {{ _shards | map(attribute='_id') | list | join (',') }}"
+          vars:
+            _shards: "{{ _shard_query.transformed_output.shards }}"
+
         - name: Register shards
           community.mongodb.mongodb_shell:
             db: "admin"
@@ -55,6 +61,10 @@
           loop_control:
             label: "{{ item.name }}"
           loop: "{{ mongodb_shard_clusters }}"
+          retries: 6
+          delay: 60
+          register: shard_register
+          until: shard_register is success
           when: item.name not in _shard_ids
 
         - name: Refresh registered shard clusters
@@ -66,4 +76,6 @@
 
         - name: Debug shard cluster list
           ansible.builtin.debug:
-            msg: "{{ _shard_query.transformed_output.shards | map(attribute='_id') | list | join (',') }}"
+            msg: "Cluster shards: {{ _shards | map(attribute='_id') | list | join (',') }}"
+          vars:
+            _shards: "{{ _shard_query.transformed_output.shards }}"

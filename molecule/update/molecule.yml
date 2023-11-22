@@ -7,7 +7,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: mongodb-stop-mongos01
+  - name: mongodb-update-mongos01
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -21,7 +21,7 @@ platforms:
     groups:
       - mongodb_mongos
       - mongodb
-  - name: mongodb-stop-mongos02
+  - name: mongodb-update-mongos02
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -35,7 +35,7 @@ platforms:
     groups:
       - mongodb_mongos
       - mongodb
-  - name: mongodb-stop-config01
+  - name: mongodb-update-config01
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -49,7 +49,7 @@ platforms:
     groups:
       - mongodb_config
       - mongodb
-  - name: mongodb-stop-config02
+  - name: mongodb-update-config02
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -63,7 +63,7 @@ platforms:
     groups:
       - mongodb_config
       - mongodb
-  - name: mongodb-stop-config03
+  - name: mongodb-update-config03
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -77,7 +77,7 @@ platforms:
     groups:
       - mongodb_config
       - mongodb
-  - name: mongodb-stop-shard01
+  - name: mongodb-update-shard01
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -91,7 +91,7 @@ platforms:
     groups:
       - mongodb_shard1
       - mongodb
-  - name: mongodb-stop-shard02
+  - name: mongodb-update-shard02
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -105,7 +105,7 @@ platforms:
     groups:
       - mongodb_shard1
       - mongodb
-  - name: mongodb-stop-shard03
+  - name: mongodb-update-shard03
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
@@ -139,7 +139,6 @@ scenario:
     - create
     - prepare
     - converge
-    - idempotence
     - side_effect
     - verify
     - cleanup

@@ -32,7 +32,7 @@
       ansible.builtin.include_vars:
         file: main.yml
   tasks:
-    - name: Register shard clusters
+    - name: Register cluster shards
       when: mongodb_shard_clusters is defined
       run_once: true
       block:
@@ -59,12 +59,8 @@
             _shard: "{{ item.name }}/{{ _members | join(',') }}"
             _shard_ids: "{{ _shard_query.transformed_output.shards | map(attribute='_id') | list }}"
           loop_control:
-            label: "{{ item.name }}"
+            label: "{{ item.name }}:{{ _shard }}"
           loop: "{{ mongodb_shard_clusters }}"
-          retries: 6
-          delay: 60
-          register: shard_register
-          until: shard_register is success
           when: item.name not in _shard_ids
 
         - name: Refresh registered shard clusters

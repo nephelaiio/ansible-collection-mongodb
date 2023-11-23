@@ -136,7 +136,7 @@ provisioner:
             - ufw
             - mongodb-org
             - mongodb-mongosh
-          mongos_package_name:
+          mongos_packages:
             - mongodb-org-server
             - mongodb-org-mongos
             - mongodb-mongosh

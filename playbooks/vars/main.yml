@@ -6,4 +6,4 @@ mongodb_shell: 'mongosh'
 mongodb_reconfig_poll: 6
 mongodb_reconfig_interval: 10
 
-mongos_service_name: 'mongos'
+Mongos_service_name: 'mongos'

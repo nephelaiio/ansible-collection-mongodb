@@ -1,5 +1,5 @@
 ---
-- name: Verify mongos service
+- name: Verify Mongos service
   hosts: mongodb_mongos
   vars:
     _service: mongos.service

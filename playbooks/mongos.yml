@@ -3,7 +3,7 @@
   hosts: "{{ mongodb | default('mongodb') }}"
 
 
-- name: Deploy MongoDB mongos servers
+- name: Deploy MongoDB Mongos servers
   hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
   become: true
   serial: 1

@@ -10,23 +10,21 @@
   roles:
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongos
-  vars:
-    mongos_replicaset_config_group: "{{ mongodb_config | default('mongodb_config') }}"
-    mongos_replicaset_config_hosts: "{{ groups[mongos_replicaset_config_group]  }}"
-    mongos_replicaset_config_members: "{{ mongos_replicaset_config_hosts | map('extract', hostvars, mongodb_address_attrs) }}"
   pre_tasks:
     - name: Include collection variables
       ansible.builtin.include_vars:
         file: main.yml
 
+    - name: Set cluster facts
+      ansible.builtin.set_fact:
+        mongos_replicaset_config_members: "{{ groups[_group] | map('extract', hostvars, mongodb_address_attrs) }}"
+      vars:
+        _group: "{{ mongodb_config | default('mongodb_config') }}"
+
 
 - name: Configure MongoDB cluster
   hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
   become: true
-  vars:
-    mongos_replicaset_config_group: "{{ mongodb_config | default('mongodb_config') }}"
-    mongos_replicaset_config_hosts: "{{ groups[mongos_replicaset_config_group]  }}"
-    mongos_replicaset_config_members: "{{ mongos_replicaset_config_hosts | map('extract', hostvars, mongodb_address_attrs) }}"
   pre_tasks:
     - name: Include collection variables
       ansible.builtin.include_vars:

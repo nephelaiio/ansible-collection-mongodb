@@ -78,7 +78,7 @@
     - name: Query Debian package versions
       ansible.builtin.shell:
         cmd: "apt-cache madison {{ item }} | awk -F'|' '{ print $2 }'"
-      loop: "{{ mongos_package_name }}"
+      loop: "{{ mongos_packages }}"
       register: _debian_package_query
       when: ansible_os_family == "Debian"
       changed_when: false
@@ -86,14 +86,14 @@
     - name: Query RedHat package versions
       ansible.builtin.shell:
         cmd: "yum list {{ item }} --showduplicates | grep '^{{ item }}' | awk '{ print $1,$2 }' | sort -r"
-      loop: "{{ mongos_package_name }}"
+      loop: "{{ mongos_packages }}"
       register: _redhat_package_query
       when: ansible_os_family == "RedHat"
       changed_when: false
 
     - name: Set package version facts
       ansible.builtin.set_fact:
-        _mongos_package_list: "{{ mongos_package_name }}"
+        _mongos_package_list: "{{ mongos_packages }}"
         _mongos_package_query: "{{ _redhat_packages + _debian_packages }}"
       vars:
         _redhat_packages: "{{ [] if _redhat_package_query.skipped else _redhat_package_query.results }}"
@@ -112,11 +112,11 @@
 
     - name: Initialize package versions
       ansible.builtin.set_fact:
-        mongos_package_name: []
+        mongos_packages: []
 
     - name: Set target Debian package versions
       ansible.builtin.set_fact:
-        mongos_package_name: "{{ mongos_package_name + [_package] }}"
+        mongos_packages: "{{ mongos_packages + [_package] }}"
       vars:
         _package: "{{ item.item }}={{ item.stdout_lines[0] | trim }}"
       loop_control:
@@ -126,7 +126,7 @@
 
     - name: Set target RedHat package versions
       ansible.builtin.set_fact:
-        mongos_package_name: "{{ mongos_package_name + [_package] }}"
+        mongos_packages: "{{ mongos_packages + [_package] }}"
       vars:
         _target: "{{ item.stdout_lines[0] }}"
         _arch: "{{ _target[0].split('.')[1] }}"
@@ -140,7 +140,7 @@
 
     - name: Debug target package versions
       ansible.builtin.debug:
-        var: mongos_package_name
+        var: mongos_packages
       run_once: true
 
 
@@ -196,7 +196,7 @@
         _package: "{{ item.split('=') | first }}"
         _version: "{{ item.split('=') | last }}"
         _installed: "{{ (packages[_package] | default([{'version': 'None'}]))[0].version }}"
-      loop: "{{ mongos_package_name }}"
+      loop: "{{ mongos_packages }}"
       when:
         - ansible_os_family == "Debian"
         - _package not in packages or _version != _installed
@@ -210,7 +210,7 @@
         _package: "{{ item.0 }}"
         _version: "{{ item.1 | regex_replace(_prefix, '') | regex_replace(_suffix, '') }}"
         _installed: "{{ (packages[_package] | default([{'version': 'None'}]))[0].version }}"
-      loop: "{{ _mongos_package_list | zip(mongos_package_name) }}"
+      loop: "{{ _mongos_package_list | zip(mongos_packages) }}"
       when:
         - ansible_os_family == "RedHat"
         - _package not in packages or _version != _installed

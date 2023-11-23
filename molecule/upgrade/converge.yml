@@ -70,6 +70,11 @@
       loop: "{{ _mongodb_package_query }}"
       when: ansible_os_family == "RedHat"
 
+    - name: Debug target package versions
+      ansible.builtin.debug:
+        var: mongodb_packages
+      run_once: true
+
 
 - name: Set target Mongos servers
   hosts: "mongodb_mongos"
@@ -142,6 +147,11 @@
         label: "{{ item.item }}"
       loop: "{{ _mongos_package_query }}"
       when: ansible_os_family == "RedHat"
+
+    - name: Debug target package versions
+      ansible.builtin.debug:
+        var: mongos_package_name
+      run_once: true
 
 
 - name: Import install playbook

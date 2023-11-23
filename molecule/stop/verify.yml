@@ -1,5 +1,5 @@
 ---
-- name: Verify mongos service
+- name: Verify Mongos service
   hosts: mongodb_mongos
   vars:
     _service: mongos.service
@@ -21,7 +21,7 @@
         msg: "Mongos service is enabled"
       when: services[_service].status != "disabled"
 
-- name: Verify mongodb service
+- name: Verify MongoDB service
   hosts: mongodb_mongos:mongodb_config:mongodb_shard1
   vars:
     _service: mongod.service

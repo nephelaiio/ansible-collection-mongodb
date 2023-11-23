@@ -1,6 +1,8 @@
 ---
 - name: Update apt repos
   hosts: all
+  roles:
+    - nephelaiio.mongodb.repo
   tasks:
     - name: Update apt repos
       ansible.builtin.apt:

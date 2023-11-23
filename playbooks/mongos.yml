@@ -3,36 +3,34 @@
   hosts: "{{ mongodb | default('mongodb') }}"
 
 
-- name: Deploy mongodb mongos servers
+- name: Deploy MongoDB Mongos servers
   hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
   become: true
   serial: 1
   roles:
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongos
-  vars:
-    mongos_replicaset_config_group: "{{ mongodb_config | default('mongodb_config') }}"
-    mongos_replicaset_config_hosts: "{{ groups[mongos_replicaset_config_group]  }}"
-    mongos_replicaset_config_members: "{{ mongos_replicaset_config_hosts | map('extract', hostvars, mongodb_address_attrs) }}"
   pre_tasks:
     - name: Include collection variables
       ansible.builtin.include_vars:
         file: main.yml
 
+    - name: Set cluster facts
+      ansible.builtin.set_fact:
+        mongos_replicaset_config_members: "{{ groups[_group] | map('extract', hostvars, mongodb_address_attrs) }}"
+      vars:
+        _group: "{{ mongodb_config | default('mongodb_config') }}"
 
-- name: Configure mongodb cluster
+
+- name: Configure MongoDB cluster
   hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
   become: true
-  vars:
-    mongos_replicaset_config_group: "{{ mongodb_config | default('mongodb_config') }}"
-    mongos_replicaset_config_hosts: "{{ groups[mongos_replicaset_config_group]  }}"
-    mongos_replicaset_config_members: "{{ mongos_replicaset_config_hosts | map('extract', hostvars, mongodb_address_attrs) }}"
   pre_tasks:
     - name: Include collection variables
       ansible.builtin.include_vars:
         file: main.yml
   tasks:
-    - name: Register shard clusters
+    - name: Register cluster shards
       when: mongodb_shard_clusters is defined
       run_once: true
       block:
@@ -42,6 +40,12 @@
             eval: "db.runCommand({listshards: 1})"
           register: _shard_query
           changed_when: false
+
+        - name: Debug shard cluster list
+          ansible.builtin.debug:
+            msg: "Cluster shards: {{ _shards | map(attribute='_id') | list | join (',') }}"
+          vars:
+            _shards: "{{ _shard_query.transformed_output.shards }}"
 
         - name: Register shards
           community.mongodb.mongodb_shell:
@@ -53,7 +57,7 @@
             _shard: "{{ item.name }}/{{ _members | join(',') }}"
             _shard_ids: "{{ _shard_query.transformed_output.shards | map(attribute='_id') | list }}"
           loop_control:
-            label: "{{ item.name }}"
+            label: "{{ _shard }}"
           loop: "{{ mongodb_shard_clusters }}"
           when: item.name not in _shard_ids
 
@@ -66,4 +70,6 @@
 
         - name: Debug shard cluster list
           ansible.builtin.debug:
-            msg: "{{ _shard_query.transformed_output.shards | map(attribute='_id') | list | join (',') }}"
+            msg: "Cluster shards: {{ _shards | map(attribute='_id') | list | join (',') }}"
+          vars:
+            _shards: "{{ _shard_query.transformed_output.shards }}"

@@ -1,18 +1,58 @@
 ---
-- name: Deploy mongodb shard replicaset
+- name: Query shard replicaset member status
   hosts: "{{ mongodb_shard | default('mongodb_shard') }}"
+  pre_tasks:
+    - name: Include collection variables
+      ansible.builtin.include_vars:
+        file: main.yml
+  tasks:
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Group provisioned hosts
+      ansible.builtin.group_by:
+        key: "mongodb_shard_{{ _status }}"
+      vars:
+        _service: "{{ mongodb_service_name }}.service"
+        _deployed: "{{ _service in services }}"
+        _stopped: "{{ _deployed and services[_service].state != 'running' }}"
+        _inactive: "{{ (not _deployed) or _stopped  }}"
+        _status: "{{ 'install' if _inactive else 'update' }}"
+
+    - name: Set replicaset facts
+      ansible.builtin.set_fact:
+        mongodb_replicaset_members: "{{ mongodb_members | map(_filter, '%s:' + mongodb_port) | list }}"
+        mongodb_replicaset_name: "{{ mongos_replicaset_shard_name }}"
+        mongodb_sharding_role: shardsvr
+      vars:
+        _filter: "nephelaiio.plugins.map_format"
+        mongodb_addresses: "{{ ansible_play_hosts_all | map('extract', hostvars, mongodb_address_attrs) }}"
+        mongodb_members: "{{ mongodb_addresses | list }}"
+
+
+- name: Deploy new shard replicaset members
+  hosts: mongodb_shard_install
   become: true
   collections:
     - nephelaiio.plugins
   roles:
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongodb
-  vars:
-    mongodb_addresses: "{{ play_hosts | map('extract', hostvars, mongodb_address_attrs) }}"
-    mongodb_members: "{{ mongodb_addresses | list }}"
-    mongodb_replicaset_members: "{{ mongodb_members | map('nephelaiio.plugins.map_format', '%s:' + mongodb_port) | list }}"
-    mongodb_replicaset_name: "{{ mongos_replicaset_shard_name }}"
-    mongodb_sharding_role: shardsvr
+  pre_tasks:
+    - name: Include collection variables
+      ansible.builtin.include_vars:
+        file: main.yml
+
+
+- name: Update existing shard replicaset members
+  hosts: mongodb_shard_update
+  serial: 1
+  become: true
+  collections:
+    - nephelaiio.plugins
+  roles:
+    - nephelaiio.mongodb.repo
+    - nephelaiio.mongodb.mongodb
   pre_tasks:
     - name: Include collection variables
       ansible.builtin.include_vars:

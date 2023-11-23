@@ -8,7 +8,7 @@
       ansible.builtin.include_vars:
         file: main.yml
   tasks:
-    - name: Include mongos service tasks
+    - name: Include Mongos service tasks
       ansible.builtin.include_role:
         name: nephelaiio.mongodb.mongodb
         tasks_from: service
@@ -32,7 +32,7 @@
       ansible.builtin.include_vars:
         file: main.yml
   tasks:
-    - name: Include mongos service tasks
+    - name: Include Mongos service tasks
       ansible.builtin.include_role:
         name: nephelaiio.mongodb.mongodb
         tasks_from: service
@@ -47,7 +47,7 @@
         interval: "{{ mongodb_reconfig_interval }}"
 
 
-- name: Restart mongos services
+- name: Restart Mongos services
   hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
   become: true
   serial: 1
@@ -56,14 +56,14 @@
       ansible.builtin.include_vars:
         file: main.yml
   tasks:
-    - name: Include mongos service tasks
+    - name: Include Mongos service tasks
       ansible.builtin.include_role:
         name: nephelaiio.mongodb.mongos
         tasks_from: service
       vars:
         mongos_service_state: restarted
 
-    - name: Check mongos cluster status
+    - name: Check Mongos cluster status
       community.mongodb.mongodb_shell:
         login_database: "admin"
         eval: "sh.status()"

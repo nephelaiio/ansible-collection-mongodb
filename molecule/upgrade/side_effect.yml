@@ -1,5 +1,5 @@
 ---
-- name: Set target MongoDB/Mongos versions
+- name: Set target MongoDB versions
   hosts: "mongodb_config:mongodb_shard1"
   tasks:
     - name: Query Debian package versions
@@ -66,8 +66,8 @@
       when: ansible_os_family == "RedHat"
 
 
-- name: Set target Mongos servers
-  hosts: "mongos"
+- name: Set target Mongos versions
+  hosts: "mongodb_mongos"
   become: true
   pre_tasks:
     - name: Query Debian package versions

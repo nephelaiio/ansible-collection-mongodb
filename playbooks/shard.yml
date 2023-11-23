@@ -15,7 +15,9 @@
       vars:
         _service: "{{ mongodb_service_name }}.service"
         _deployed: "{{ _service in services }}"
-        _status: "{{ 'install' if not _deployed else 'update' }}"
+        _stopped: "{{ _deployed and services[_service].state != 'running' }}"
+        _inactive: "{{ (not _deployed) or _stopped  }}"
+        _status: "{{ 'install' if _inactive else 'update' }}"
 
 
 - name: Deploy new shard replicaset members
@@ -27,12 +29,20 @@
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongodb
   vars:
-    mongodb_addresses: "{{ ansible_play_hosts_all | map('extract', hostvars, mongodb_address_attrs) }}"
+    _filter: "'nephelaiio.plugins.map_format'"
+    _mongodb_group: "{{ mongodb_shard | default('mongodb_shard') }}"
+    mongodb_addresses: "{{ groups[_mongodb_group] | map('extract', hostvars, mongodb_address_attrs) }}"
     mongodb_members: "{{ mongodb_addresses | list }}"
-    mongodb_replicaset_members: "{{ mongodb_members | map('nephelaiio.plugins.map_format', '%s:' + mongodb_port) | list }}"
+    mongodb_replicaset_members: "{{ mongodb_members | map(_filter, '%s:' + mongodb_port) | list }}"
     mongodb_replicaset_name: "{{ mongos_replicaset_shard_name }}"
     mongodb_sharding_role: shardsvr
   pre_tasks:
+    - debug:
+        var: _mongodb_group
+
+    - debug:
+        var: _mongodb_members
+
     - name: Include collection variables
       ansible.builtin.include_vars:
         file: main.yml
@@ -48,11 +58,13 @@
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongodb
   vars:
-    mongodb_addresses: "{{ ansible_play_hosts_all | map('extract', hostvars, mongodb_address_attrs) }}"
+    _filter: "'nephelaiio.plugins.map_format'"
+    _mongodb_group: "{{ mongodb_shard | default('mongodb_shard') }}"
+    mongodb_addresses: "{{ groups[_mongodb_group] | map('extract', hostvars, mongodb_address_attrs) }}"
     mongodb_members: "{{ mongodb_addresses | list }}"
-    mongodb_replicaset_members: "{{ mongodb_members | map('nephelaiio.plugins.map_format', '%s:' + mongodb_port) | list }}"
-    mongodb_replicaset_name: "{{ mongos_replicaset_config_name | default('config') }}"
-    mongodb_sharding_role: configsvr
+    mongodb_replicaset_members: "{{ mongodb_members | map(_filter, '%s:' + mongodb_port) | list }}"
+    mongodb_replicaset_name: "{{ mongos_replicaset_shard_name }}"
+    mongodb_sharding_role: shardsvr
   pre_tasks:
     - name: Include collection variables
       ansible.builtin.include_vars:

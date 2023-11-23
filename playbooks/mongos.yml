@@ -57,7 +57,7 @@
             _shard: "{{ item.name }}/{{ _members | join(',') }}"
             _shard_ids: "{{ _shard_query.transformed_output.shards | map(attribute='_id') | list }}"
           loop_control:
-            label: "{{ item.name }}:{{ _shard }}"
+            label: "{{ _shard }}"
           loop: "{{ mongodb_shard_clusters }}"
           when: item.name not in _shard_ids
 

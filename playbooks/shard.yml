@@ -22,7 +22,7 @@
     - name: Set replicaset facts
       ansible.builtin.set_fact:
         mongodb_replicaset_members: "{{ mongodb_members | map(_filter, '%s:' + mongodb_port) | list }}"
-        mongodb_replicaset_name: "{{ mongos_replicaset_config_name | default('config') }}"
+        mongodb_replicaset_name: "{{ mongos_replicaset_shard_name }}"
         mongodb_sharding_role: shardsvr
       vars:
         _filter: "nephelaiio.plugins.map_format"

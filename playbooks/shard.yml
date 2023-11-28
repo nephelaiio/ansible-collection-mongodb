@@ -33,8 +33,6 @@
 - name: Deploy new shard replicaset members
   hosts: mongodb_shard_install
   become: true
-  collections:
-    - nephelaiio.plugins
   roles:
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongodb
@@ -48,8 +46,6 @@
   hosts: mongodb_shard_update
   serial: 1
   become: true
-  collections:
-    - nephelaiio.plugins
   roles:
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongodb

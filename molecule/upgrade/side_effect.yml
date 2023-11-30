@@ -51,6 +51,10 @@
       loop: "{{ _mongodb_package_query }}"
       when: ansible_os_family == "Debian"
 
+    - name: Debug package query
+      ansible.builtin.debug:
+        var: _mongos_package_query
+
     - name: Set target RedHat package versions
       ansible.builtin.set_fact:
         mongodb_packages: "{{ mongodb_packages + [_package] }}"
@@ -123,6 +127,10 @@
         label: "{{ item.item }}"
       loop: "{{ _mongos_package_query }}"
       when: ansible_os_family == "Debian"
+
+    - name: Debug package query
+      ansible.builtin.debug:
+        var: _mongos_package_query
 
     - name: Set target RedHat package versions
       ansible.builtin.set_fact:

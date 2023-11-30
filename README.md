@@ -7,6 +7,7 @@ An [ansible collection](https://galaxy.ansible.com/ui/repo/published/nephelaiio/
 
 ## Collection roles
 
+* nephelaiio.mongodb.repo
 * nephelaiio.mongodb.mongos
 * nephelaiio.mongodb.mongodb
 
@@ -17,11 +18,7 @@ An [ansible collection](https://galaxy.ansible.com/ui/repo/published/nephelaiio/
 * nephelaiio.mongodb.online: Start mongos cluster services
 * nephelaiio.mongodb.stop: Stop all cluster services
 * nephelaiio.mongodb.start: Start all cluster services
-
-## To do
-* Auto-detect package pins and configure locks when requested in member roles
-* Refactor install play to allow for cluster upgrades with package pin. Requires setting serial execution conditionally on cluster status check (1 on OK, 100% on fail)
-* Configure oplogMinRetentionHours to 24h
+* nephelaiio.mongodb.update: Perform cluster-safe os updates
 
 ## Testing
 
@@ -29,9 +26,10 @@ Please make sure your environment has [docker](https://www.docker.com) installed
 
 Role is tested against the following distributions (docker images):
 
+  * Ubuntu Jammy
   * Ubuntu Focal
-  * Ubuntu Bionic
-  * Debian Bookworm
+  * Debian Bullseye
+  * Rocky Linux 9
 
 You can test the collection directly from sources using command `make test`
 

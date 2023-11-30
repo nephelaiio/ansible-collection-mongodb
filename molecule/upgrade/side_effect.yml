@@ -53,7 +53,7 @@
 
     - name: Debug package query
       ansible.builtin.debug:
-        var: _mongos_package_query
+        var: _mongodb_package_query
 
     - name: Set target RedHat package versions
       ansible.builtin.set_fact:

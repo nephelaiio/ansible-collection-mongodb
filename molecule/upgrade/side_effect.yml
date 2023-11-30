@@ -59,7 +59,7 @@
       ansible.builtin.set_fact:
         mongodb_packages: "{{ mongodb_packages + [_package] }}"
       vars:
-        _target: "{{ item.stdout_lines[0] }}"
+        _target: "{{ item.stdout_lines[0].split(' ') }}"
         _arch: "{{ _target[0].split('.')[1] }}"
         _name: "{{ _target[0].split('.')[0] }}"
         _version: "{{ _target[1] }}"
@@ -136,7 +136,7 @@
       ansible.builtin.set_fact:
         mongos_packages: "{{ mongos_packages + [_package] }}"
       vars:
-        _target: "{{ item.stdout_lines[0] }}"
+        _target: "{{ item.stdout_lines[0].split(' ') }}"
         _arch: "{{ _target[0].split('.')[1] }}"
         _name: "{{ _target[0].split('.')[0] }}"
         _version: "{{ _target[1] }}"

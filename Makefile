@@ -21,7 +21,7 @@ test: lint
 install:
 	@type poetry >/dev/null || pip3 install poetry
 	@type yq || sudo apt-get install -y yq
-	@poetry install
+	@poetry install --no-root
 
 lint: install
 	poetry run yamllint .

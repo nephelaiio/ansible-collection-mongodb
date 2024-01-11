@@ -7,6 +7,8 @@
   become: true
   vars_files:
     - main.yml
+  roles:
+    - nephelaiio.mongodb.pip
   tasks:
     - name: Add host entries for cluster members
       ansible.builtin.lineinfile:

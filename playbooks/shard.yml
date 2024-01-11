@@ -24,7 +24,7 @@
         mongodb_sharding_role: shardsvr
       vars:
         _filter: "nephelaiio.plugins.map_format"
-        mongodb_members: "{{ groups[mongodb_config | default('mongodb_config')] }}"
+        mongodb_members: "{{ groups[mongodb_shard | default('mongodb_shard')] }}"
 
 
 - name: Deploy new shard replicaset members

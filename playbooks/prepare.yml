@@ -4,6 +4,7 @@
     - "{{ mongodb_config | default('mongodb_config') }}"
     - "{{ mongodb_shard1 | default('mongodb_shard1') }}"
     - "{{ mongodb_mongos | default('mongodb_mongos') }}"
+  become: true
   vars_files:
     - main.yml
   tasks:

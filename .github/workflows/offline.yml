@@ -11,7 +11,7 @@ on:
 jobs:
   offline:
     name: offline
-    runs-on: ubuntu-latest
+    runs-on: libvirt
     strategy:
       matrix:
         scenario:

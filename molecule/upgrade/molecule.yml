@@ -82,7 +82,6 @@ scenario:
     - converge
   test_sequence:
     - dependency
-    - destroy
     - create
     - prepare
     - converge

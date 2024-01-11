@@ -11,7 +11,7 @@ on:
 jobs:
   upgrade:
     name: upgrade
-    runs-on: ubuntu-latest
+    runs-on: libvirt
     strategy:
       matrix:
         scenario:

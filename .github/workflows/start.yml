@@ -11,7 +11,7 @@ on:
 jobs:
   start:
     name: start
-    runs-on: ubuntu-latest
+    runs-on: libvirt
     strategy:
       matrix:
         scenario:

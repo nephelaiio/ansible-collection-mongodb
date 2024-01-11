@@ -65,7 +65,6 @@ verifier:
 scenario:
   test_sequence:
     - dependency
-    - destroy
     - create
     - prepare
     - converge

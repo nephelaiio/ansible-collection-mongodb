@@ -5,125 +5,56 @@ dependency:
     role-file: requirements.yml
     requirements-file: requirements.yml
 driver:
-  name: docker
+  name: default
 platforms:
   - name: mongodb-start-mongos01
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    cgroupns_mode: host
-    privileged: true
-    pre_build_image: true
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    tmpfs:
-      - /tmp
-      - /opt
+    image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_mongos
       - mongodb
   - name: mongodb-start-mongos02
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    cgroupns_mode: host
-    privileged: true
-    pre_build_image: true
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    tmpfs:
-      - /tmp
-      - /opt
+    image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_mongos
       - mongodb
   - name: mongodb-start-config01
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    cgroupns_mode: host
-    privileged: true
-    pre_build_image: true
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    tmpfs:
-      - /tmp
-      - /opt
+    image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_config
       - mongodb
   - name: mongodb-start-config02
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    cgroupns_mode: host
-    privileged: true
-    pre_build_image: true
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    tmpfs:
-      - /tmp
-      - /opt
+    image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_config
       - mongodb
   - name: mongodb-start-config03
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    cgroupns_mode: host
-    privileged: true
-    pre_build_image: true
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    tmpfs:
-      - /tmp
-      - /opt
+    image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_config
       - mongodb
   - name: mongodb-start-shard01
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    cgroupns_mode: host
-    privileged: true
-    pre_build_image: true
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    tmpfs:
-      - /tmp
-      - /opt
+    image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_shard1
       - mongodb
   - name: mongodb-start-shard02
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    cgroupns_mode: host
-    privileged: true
-    pre_build_image: true
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    tmpfs:
-      - /tmp
-      - /opt
+    image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_shard1
       - mongodb
   - name: mongodb-start-shard03
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
-    command: ${MOLECULE_DOCKER_COMMAND:-""}
-    cgroupns_mode: host
-    privileged: true
-    pre_build_image: true
-    volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
-    tmpfs:
-      - /tmp
-      - /opt
+    image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_shard1
       - mongodb
 provisioner:
   name: ansible
   playbooks:
+    create: ../common/create.yml
     converge: ../common/start.yml
     verify: ../common/start.yml
+    destroy: ../common/destroy.yml
+    cleanup: ../common/cleanup.yml
   config_options:
     defaults:
       callbacks_enabled: ansible.posix.profile_tasks
@@ -132,11 +63,10 @@ verifier:
 scenario:
   test_sequence:
     - dependency
-    - cleanup
     - destroy
     - create
     - prepare
     - converge
     - verify
-    - cleanup
     - destroy
+    - cleanup

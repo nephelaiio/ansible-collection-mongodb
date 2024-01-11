@@ -5,7 +5,7 @@ dependency:
     role-file: requirements.yml
     requirements-file: requirements.yml
 driver:
-  name: docker
+  name: default
 platforms:
   - name: mongodb-install-mongos01
     image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
@@ -122,10 +122,13 @@ platforms:
 provisioner:
   name: ansible
   playbooks:
+    create: ../common/create.yml
     prepare: ../common/prepare.yml
     converge: ../common/install.yml
     side_effect: ../common/install.yml
     verify: ../common/verify.yml
+    destroy: ../common/destroy.yml
+    cleanup: ../common/cleanup.yml
   config_options:
     defaults:
       callbacks_enabled: ansible.posix.profile_tasks
@@ -134,12 +137,11 @@ verifier:
 scenario:
   test_sequence:
     - dependency
-    - cleanup
     - destroy
     - create
     - prepare
     - converge
     - side_effect
     - verify
-    - cleanup
     - destroy
+    - cleanup

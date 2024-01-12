@@ -1,6 +1,7 @@
 ---
 - name: Update apt repos
   hosts: all
+  become: true
   roles:
     - nephelaiio.mongodb.repo
   tasks:

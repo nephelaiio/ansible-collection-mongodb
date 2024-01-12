@@ -1,4 +1,7 @@
 ---
+- name: Prepare cluster nodes
+  ansible.builtin.import_playbook: nephelaiio.mongodb.prepare
+
 - name: Deploy config cluster
   ansible.builtin.import_playbook: nephelaiio.mongodb.config
   vars:

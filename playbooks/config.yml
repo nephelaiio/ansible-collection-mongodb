@@ -1,10 +1,8 @@
 ---
 - name: Query config replicaset member status
   hosts: "{{ mongodb_config | default('mongodb_config') }}"
-  pre_tasks:
-    - name: Include collection variables
-      ansible.builtin.include_vars:
-        file: main.yml
+  vars_files:
+    - main.yml
   tasks:
     - name: Gather service facts
       ansible.builtin.service_facts:
@@ -26,30 +24,25 @@
         mongodb_sharding_role: configsvr
       vars:
         _filter: "nephelaiio.plugins.map_format"
-        mongodb_addresses: "{{ ansible_play_hosts_all | map('extract', hostvars, mongodb_address_attrs) }}"
-        mongodb_members: "{{ mongodb_addresses | list }}"
+        mongodb_members: "{{ groups[mongodb_config | default('mongodb_config')] }}"
 
 
 - name: Deploy new config replicaset members
   hosts: mongodb_config_install
   become: true
+  vars_files:
+    - main.yml
   roles:
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongodb
-  pre_tasks:
-    - name: Include collection variables
-      ansible.builtin.include_vars:
-        file: main.yml
 
 
 - name: Update existing config replicaset members
   hosts: mongodb_config_update
   serial: 1
   become: true
+  vars_files:
+    - main.yml
   roles:
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongodb
-  pre_tasks:
-    - name: Include collection variables
-      ansible.builtin.include_vars:
-        file: main.yml

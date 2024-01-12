@@ -1,5 +1,5 @@
 ---
-name: install
+name: molecule
 
 on:
   pull_request:
@@ -9,13 +9,20 @@ on:
     - cron: "0 5 * * 5"
 
 jobs:
-  install:
-    name: install
+  molecule:
+    name: molecule
     runs-on: libvirt
     strategy:
       matrix:
         scenario:
           - name: install
+          - name: offline
+          - name: online
+          - name: stop
+          - name: start
+          - name: restart
+          - name: update
+          - name: upgrade
         image:
           - url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
           - url: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img

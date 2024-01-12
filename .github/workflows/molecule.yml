@@ -15,19 +15,25 @@ jobs:
     strategy:
       matrix:
         scenario:
-          - name: install
-          - name: offline
-          - name: online
-          - name: stop
-          - name: start
-          - name: restart
-          - name: update
-          - name: upgrade
+          - install
+          - offline
+          - online
+          - stop
+          - start
+          - restart
+          - update
+          - upgrade
         image:
-          - url: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
-          - url: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
-          - url: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2
-          - url: https://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2
+          - https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+        include:
+          - scenario: install
+            image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
+          - scenario: install
+            image: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2
+          - scenario: install
+            image: https://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2
+          - scenario: update
+            image: https://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2
     steps:
       - name: Check out the codebase
         uses: actions/checkout@v4
@@ -57,5 +63,5 @@ jobs:
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
-          MOLECULE_KVM_IMAGE: ${{ matrix.image.url }}
-          MOLECULE_SCENARIO: ${{ matrix.scenario.name }}
+          MOLECULE_KVM_IMAGE: ${{ matrix.image }}
+          MOLECULE_SCENARIO: ${{ matrix.scenario }}

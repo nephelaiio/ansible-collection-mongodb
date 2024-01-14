@@ -23,8 +23,8 @@
       community.mongodb.mongodb_status:
         replica_set: "{{ mongos_replicaset_config_name | default('config') }}"
         validate: minimal
-        poll: "{{ mongodb_reconfig_poll }}"
-        interval: "{{ mongodb_reconfig_interval }}"
+        poll: "{{ _mongodb_reconfig_poll }}"
+        interval: "{{ _mongodb_reconfig_interval }}"
 
 
 - name: Update shard1 nodes
@@ -51,8 +51,8 @@
       community.mongodb.mongodb_status:
         replica_set: "{{ mongos_replicaset_config_name | default('config') }}"
         validate: minimal
-        poll: "{{ mongodb_reconfig_poll }}"
-        interval: "{{ mongodb_reconfig_interval }}"
+        poll: "{{ _mongodb_reconfig_poll }}"
+        interval: "{{ _mongodb_reconfig_interval }}"
 
 
 - name: Update Mongos nodes
@@ -79,6 +79,6 @@
       community.mongodb.mongodb_shell:
         login_database: "admin"
         eval: "sh.status()"
-      retries: "{{ mongodb_reconfig_poll }}"
-      delay: "{{ mongodb_reconfig_interval }}"
+      retries: "{{ _mongodb_reconfig_poll }}"
+      delay: "{{ _mongodb_reconfig_interval }}"
       changed_when: false

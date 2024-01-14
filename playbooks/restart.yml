@@ -17,8 +17,8 @@
       community.mongodb.mongodb_status:
         replica_set: "{{ mongos_replicaset_config_name | default('config') }}"
         validate: minimal
-        poll: "{{ mongodb_reconfig_poll }}"
-        interval: "{{ mongodb_reconfig_interval }}"
+        poll: "{{ _mongodb_reconfig_poll }}"
+        interval: "{{ _mongodb_reconfig_interval }}"
 
 
 - name: Restart shard1 services
@@ -39,8 +39,8 @@
       community.mongodb.mongodb_status:
         replica_set: "{{ mongos_replicaset_shard1_name | default('shard1') }}"
         validate: minimal
-        poll: "{{ mongodb_reconfig_poll }}"
-        interval: "{{ mongodb_reconfig_interval }}"
+        poll: "{{ _mongodb_reconfig_poll }}"
+        interval: "{{ _mongodb_reconfig_interval }}"
 
 
 - name: Restart Mongos services
@@ -61,6 +61,6 @@
       community.mongodb.mongodb_shell:
         login_database: "admin"
         eval: "sh.status()"
-      retries: "{{ mongodb_reconfig_poll }}"
-      delay: "{{ mongodb_reconfig_interval }}"
+      retries: "{{ _mongodb_reconfig_poll }}"
+      delay: "{{ _mongodb_reconfig_interval }}"
       changed_when: false

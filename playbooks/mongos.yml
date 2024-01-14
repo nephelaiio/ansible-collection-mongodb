@@ -41,7 +41,7 @@
             eval: "sh.addShard('{{ _shard }}')"
           vars:
             _hosts: "{{ groups[item.group] }}"
-            _members: "{{ _hosts | map('nephelaiio.plugins.map_format', '%s:' + mongodb_port) }}"
+            _members: "{{ _hosts | map('nephelaiio.plugins.map_format', '%s:' + _mongodb_port) }}"
             _shard: "{{ item.name }}/{{ _members | join(',') }}"
             _shard_ids: "{{ _shard_query.transformed_output.shards | map(attribute='_id') | list }}"
           loop_control:

@@ -11,7 +11,7 @@
       ansible.builtin.group_by:
         key: "mongodb_shard_{{ _status }}"
       vars:
-        _service: "{{ mongodb_service_name }}.service"
+        _service: "{{ _mongodb_service_name }}.service"
         _deployed: "{{ _service in services }}"
         _stopped: "{{ _deployed and services[_service].state != 'running' }}"
         _inactive: "{{ (not _deployed) or _stopped  }}"
@@ -19,7 +19,7 @@
 
     - name: Set replicaset facts
       ansible.builtin.set_fact:
-        mongodb_replicaset_members: "{{ mongodb_members | map(_filter, '%s:' + mongodb_port) | list }}"
+        mongodb_replicaset_members: "{{ mongodb_members | map(_filter, '%s:' + _mongodb_port) | list }}"
         mongodb_replicaset_name: "{{ mongos_replicaset_shard_name }}"
         mongodb_sharding_role: shardsvr
       vars:

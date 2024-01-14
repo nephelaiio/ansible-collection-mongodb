@@ -1,8 +1,6 @@
 ---
-mongodb_port: '27017'
-mongodb_service_name: mongod
-mongodb_shell: 'mongosh'
-mongodb_reconfig_poll: 6
-mongodb_reconfig_interval: 10
-
-mongos_service_name: 'mongos'
+_mongodb_port: "{{ mongodb_port | default('27017') }}"
+_mongodb_service_name: "{{ mongodb_service_name | default('mongod') }}"
+_mongodb_reconfig_poll: "{{ mongodb_reconfig_poll | default(6) }}"
+_mongodb_reconfig_interval: "{{ mongodb_reconfig_interval | default(10) }}"
+_mongodb_hosts_manage: true

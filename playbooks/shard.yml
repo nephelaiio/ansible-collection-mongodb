@@ -19,12 +19,14 @@
 
     - name: Set replicaset facts
       ansible.builtin.set_fact:
-        mongodb_replicaset_members: "{{ mongodb_members | map(_filter, '%s:' + _mongodb_port) | list }}"
+        mongodb_replicaset_members: "{{ _mongodb_members | map(_filter, '%s:' + _mongodb_port) | list }}"
         mongodb_replicaset_name: "{{ mongos_replicaset_shard_name }}"
         mongodb_sharding_role: shardsvr
       vars:
         _filter: "nephelaiio.plugins.map_format"
-        mongodb_members: "{{ groups[mongodb_shard | default('mongodb_shard')] }}"
+        _mongodb_hosts: "{{ groups[mongodb_shard | default('mongodb_shard')] }}"
+        _mongodb_addrs: "{{ _mongodb_hosts | map('extract', hostvars, __mongodb_address_attrs) | list }}"
+        _mongodb_members: "{{ _mongodb_hosts if _mongodb_hosts_manage else _mongodb_addrs }}"
 
 
 - name: Deploy new shard replicaset members

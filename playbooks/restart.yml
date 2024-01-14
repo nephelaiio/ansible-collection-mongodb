@@ -1,7 +1,7 @@
 ---
 - name: Restart config services
   serial: 1
-  hosts: "{{ mongodb_config | default('mongodb_config') }}"
+  hosts: "{{ __mongodb_config }}"
   become: true
   vars_files:
     - main.yml
@@ -23,7 +23,7 @@
 
 - name: Restart shard1 services
   serial: 1
-  hosts: "{{ mongodb_shard1 | default('mongodb_shard1') }}"
+  hosts: "{{ __mongodb_shard1 }}"
   become: true
   vars_files:
     - main.yml
@@ -44,7 +44,7 @@
 
 
 - name: Restart Mongos services
-  hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
+  hosts: "{{ __mongodb_mongos }}"
   become: true
   serial: 1
   vars_files:

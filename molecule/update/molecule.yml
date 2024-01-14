@@ -5,72 +5,133 @@ dependency:
     role-file: requirements.yml
     requirements-file: requirements.yml
 driver:
-  name: default
+  name: docker
 platforms:
   - name: mongodb-update-mongos01
-    image: "${MOLECULE_KVM_IMAGE}"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /tmp
+      - /opt
     groups:
       - mongodb_mongos
       - mongodb
   - name: mongodb-update-mongos02
-    image: "${MOLECULE_KVM_IMAGE}"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /tmp
+      - /opt
     groups:
       - mongodb_mongos
       - mongodb
   - name: mongodb-update-config01
-    image: "${MOLECULE_KVM_IMAGE}"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /tmp
+      - /opt
     groups:
       - mongodb_config
       - mongodb
   - name: mongodb-update-config02
-    image: "${MOLECULE_KVM_IMAGE}"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /tmp
+      - /opt
     groups:
       - mongodb_config
       - mongodb
   - name: mongodb-update-config03
-    image: "${MOLECULE_KVM_IMAGE}"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /tmp
+      - /opt
     groups:
       - mongodb_config
       - mongodb
   - name: mongodb-update-shard01
-    image: "${MOLECULE_KVM_IMAGE}"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /tmp
+      - /opt
     groups:
       - mongodb_shard1
       - mongodb
   - name: mongodb-update-shard02
-    image: "${MOLECULE_KVM_IMAGE}"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /tmp
+      - /opt
     groups:
       - mongodb_shard1
       - mongodb
   - name: mongodb-update-shard03
-    image: "${MOLECULE_KVM_IMAGE}"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /tmp
+      - /opt
     groups:
       - mongodb_shard1
       - mongodb
 provisioner:
   name: ansible
   playbooks:
-    create: ../common/create.yml
     prepare: ../common/prepare.yml
     converge: ../common/install.yml
     side_effect: ../common/restart.yml
     verify: ../common/verify.yml
-    destroy: ../common/destroy.yml
-    cleanup: ../common/cleanup.yml
   config_options:
     defaults:
       callbacks_enabled: ansible.posix.profile_tasks
 verifier:
   name: ansible
 scenario:
-  prepare_sequence:
-    - prepare
-  converge_sequence:
-    - converge
-  destroy_sequence:
-    - destroy
-  cleanup_sequence:
-    - cleanup
   test_sequence:
     - dependency
     - create

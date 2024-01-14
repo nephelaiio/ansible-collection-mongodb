@@ -1,8 +1,8 @@
 ---
 - name: Start mongod services
   hosts:
-    - "{{ mongodb_config | default('mongodb_config') }}"
-    - "{{ mongodb_shard1 | default('mongodb_shard1') }}"
+    - "{{ __mongodb_config }}"
+    - "{{ __mongodb_shard1 }}"
   become: true
   tasks:
     - name: Include Mongos service tasks
@@ -12,7 +12,7 @@
 
 
 - name: Start Mongos services
-  hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
+  hosts: "{{ __mongodb_mongos }}"
   become: true
   tasks:
     - name: Include Mongos service tasks

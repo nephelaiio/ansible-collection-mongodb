@@ -1,6 +1,6 @@
 ---
 - name: Start Mongos services
-  hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
+  hosts: "{{ __mongodb_mongos }}"
   become: true
   tasks:
     - name: Include Mongos service tasks

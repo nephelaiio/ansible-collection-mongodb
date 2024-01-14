@@ -1,9 +1,9 @@
 ---
 - name: Query config replicaset member status
   hosts:
-    - "{{ mongodb_config | default('mongodb_config') }}"
-    - "{{ mongodb_shard1 | default('mongodb_shard1') }}"
-    - "{{ mongodb_mongos | default('mongodb_mongos') }}"
+    - "{{ __mongodb_config }}"
+    - "{{ __mongodb_shard1 }}"
+    - "{{ __mongodb_mongos }}"
   become: true
   vars_files:
     - main.yml

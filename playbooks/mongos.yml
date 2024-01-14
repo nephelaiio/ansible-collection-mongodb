@@ -1,19 +1,31 @@
 ---
+- name: Gather cluster facts
+  hosts:
+    - "{{ __mongodb_config }}"
+    - "{{ __mongodb_shard1 }}"
+    - "{{ __mongodb_mongos }}"
+  become: true
+  vars_files:
+    - main.yml
+
+
 - name: Deploy MongoDB Mongos servers
-  hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
+  hosts: "{{ __mongodb_mongos }}"
   become: true
   serial: 1
   vars_files:
     - main.yml
   vars:
-    mongos_replicaset_config_members: "{{ groups[mongodb_config | default('mongodb_config')] }}"
+    _config_hosts: "{{ groups[__mongodb_config] }}"
+    _config_addrs: "{{ _config_hosts | map('extract', hostvars, __mongodb_address_attrs) | list }}"
+    mongos_replicaset_config_members: "{{ _config_hosts if _mongodb_hosts_manage else _config_addrs }}"
   roles:
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongos
 
 
 - name: Configure MongoDB cluster
-  hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
+  hosts: "{{ __mongodb_mongos }}"
   become: true
   vars_files:
     - main.yml
@@ -40,7 +52,9 @@
             db: "admin"
             eval: "sh.addShard('{{ _shard }}')"
           vars:
-            _hosts: "{{ groups[item.group] }}"
+            _hostnames: "{{ groups[item.group] }}"
+            _addresses: "{{ _hostnames | map('extract', hostvars, __mongodb_address_attrs) | list }}"
+            _hosts: "{{ _hostnames if _mongodb_hosts_manage else _addresses }}"
             _members: "{{ _hosts | map('nephelaiio.plugins.map_format', '%s:' + _mongodb_port) }}"
             _shard: "{{ item.name }}/{{ _members | join(',') }}"
             _shard_ids: "{{ _shard_query.transformed_output.shards | map(attribute='_id') | list }}"

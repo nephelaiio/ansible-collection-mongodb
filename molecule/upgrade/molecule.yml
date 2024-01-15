@@ -132,8 +132,6 @@ provisioner:
       all:
         vars:
           mongodb_packages:
-            - ca-certificates
-            - ufw
             - mongodb-org
             - mongodb-mongosh
           mongos_packages:

@@ -1,0 +1,81 @@
+---
+dependency:
+  name: galaxy
+  options:
+    role-file: requirements.yml
+    requirements-file: requirements.yml
+driver:
+  name: default
+platforms:
+  - name: mongodb-install-mongos01
+    image: "${MOLECULE_KVM_IMAGE}"
+    groups:
+      - mongodb_mongos
+      - mongodb
+  - name: mongodb-install-mongos02
+    image: "${MOLECULE_KVM_IMAGE}"
+    groups:
+      - mongodb_mongos
+      - mongodb
+  - name: mongodb-install-config01
+    image: "${MOLECULE_KVM_IMAGE}"
+    groups:
+      - mongodb_config
+      - mongodb
+  - name: mongodb-install-config02
+    image: "${MOLECULE_KVM_IMAGE}"
+    groups:
+      - mongodb_config
+      - mongodb
+  - name: mongodb-install-config03
+    image: "${MOLECULE_KVM_IMAGE}"
+    groups:
+      - mongodb_config
+      - mongodb
+  - name: mongodb-install-shard01
+    image: "${MOLECULE_KVM_IMAGE}"
+    groups:
+      - mongodb_shard1
+      - mongodb
+  - name: mongodb-install-shard02
+    image: "${MOLECULE_KVM_IMAGE}"
+    groups:
+      - mongodb_shard1
+      - mongodb
+  - name: mongodb-install-shard03
+    image: "${MOLECULE_KVM_IMAGE}"
+    groups:
+      - mongodb_shard1
+      - mongodb
+provisioner:
+  name: ansible
+  playbooks:
+    create: ../common/create.yml
+    prepare: ../common/prepare.yml
+    converge: ../common/install.yml
+    verify: ../common/verify.yml
+    destroy: ../common/destroy.yml
+    cleanup: ../common/cleanup.yml
+  config_options:
+    defaults:
+      callbacks_enabled: ansible.posix.profile_tasks
+verifier:
+  name: ansible
+scenario:
+  prepare_sequence:
+    - prepare
+  converge_sequence:
+    - converge
+  destroy_sequence:
+    - destroy
+  cleanup_sequence:
+    - cleanup
+  test_sequence:
+    - dependency
+    - create
+    - prepare
+    - converge
+    - side_effect
+    - verify
+    - destroy
+    - cleanup

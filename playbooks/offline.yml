@@ -1,7 +1,9 @@
 ---
 - name: Stop Mongos services
-  hosts: "{{ mongodb_mongos | default('mongodb_mongos') }}"
+  hosts: "{{ __mongodb_mongos }}"
   become: true
+  vars_files:
+    - main.yml
   tasks:
     - name: Include Mongos service tasks
       ansible.builtin.include_role:

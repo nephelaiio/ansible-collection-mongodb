@@ -11,7 +11,7 @@ on:
 jobs:
   molecule:
     name: molecule
-    runs-on: libvirt
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         scenario:

@@ -1,6 +1,6 @@
 ---
 - name: Query config replicaset member status
-  hosts: "{{ mongodb_config | default('mongodb_config') }}"
+  hosts: "{{ __mongodb_config }}"
   vars_files:
     - main.yml
   tasks:
@@ -11,7 +11,7 @@
       ansible.builtin.group_by:
         key: "mongodb_config_{{ _status }}"
       vars:
-        _service: "{{ mongodb_service_name }}.service"
+        _service: "{{ _mongodb_service_name }}.service"
         _deployed: "{{ _service in services }}"
         _stopped: "{{ _deployed and services[_service].state != 'running' }}"
         _inactive: "{{ (not _deployed) or _stopped  }}"
@@ -19,12 +19,14 @@
 
     - name: Set replicaset facts
       ansible.builtin.set_fact:
-        mongodb_replicaset_members: "{{ mongodb_members | map(_filter, '%s:' + mongodb_port) | list }}"
+        mongodb_replicaset_members: "{{ _mongodb_members | map(_filter, '%s:' + _mongodb_port) | list }}"
         mongodb_replicaset_name: "{{ mongos_replicaset_config_name | default('config') }}"
         mongodb_sharding_role: configsvr
       vars:
         _filter: "nephelaiio.plugins.map_format"
-        mongodb_members: "{{ groups[mongodb_config | default('mongodb_config')] }}"
+        _mongodb_hosts: "{{ groups[__mongodb_config] }}"
+        _mongodb_addrs: "{{ _mongodb_hosts | map('extract', hostvars, __mongodb_address_attrs) | list }}"
+        _mongodb_members: "{{ _mongodb_hosts if _mongodb_hosts_manage else _mongodb_addrs }}"
 
 
 - name: Deploy new config replicaset members

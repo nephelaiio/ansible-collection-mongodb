@@ -49,7 +49,7 @@
 
     - name: Wait for replica set to stabilize
       community.mongodb.mongodb_status:
-        replica_set: "{{ mongos_replicaset_config_name | default('config') }}"
+        replica_set: "{{ mongos_replicaset_shard1_name | default('shard1') }}"
         validate: minimal
         poll: "{{ _mongodb_reconfig_poll }}"
         interval: "{{ _mongodb_reconfig_interval }}"

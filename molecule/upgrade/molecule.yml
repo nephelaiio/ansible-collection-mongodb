@@ -132,14 +132,12 @@ provisioner:
       all:
         vars:
           mongodb_packages:
-            - mongodb-org
+            - mongodb-org-server
             - mongodb-mongosh
           mongos_packages:
             - mongodb-org-server
             - mongodb-org-mongos
             - mongodb-mongosh
-            - python3-pymongo
-            - python3-gnupg
           mongodb_hosts_manage: false
 verifier:
   name: ansible

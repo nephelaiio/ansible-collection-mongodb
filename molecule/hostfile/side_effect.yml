@@ -1,5 +1,71 @@
 ---
+- name: Gather cluster facts
+  hosts: mongodb_mongos
+  become: true
+  tasks:
+    - name: Gather MongoDB existing replica set members
+      community.mongodb.mongodb_shell:
+        eval: "sh.status()"
+        mongo_cmd: "{{ mongodb_shell | default(omit) }}"
+      retries: 6
+      delay: 10
+      register: mongodb_status
+      until: mongodb_status is success
+
+    - name: Write initial MongoDB replicaset status
+      ansible.builtin.copy:
+        dest: "{{ mongodb_cluster_state_zero }}"
+        content: "{{ mongodb_status | to_nice_yaml(indent=2) }}"
+        mode: 0644
+
+
 - name: Import install playbook
   import_playbook: nephelaiio.mongodb.install
   vars:
     mongodb_hosts_manage: false
+
+
+- name: Gather cluster facts
+  hosts: mongodb_mongos
+  become: true
+  tasks:
+    - name: Gather MongoDB existing replica set members
+      community.mongodb.mongodb_shell:
+        eval: "sh.status()"
+        mongo_cmd: "{{ mongodb_shell | default(omit) }}"
+      retries: 6
+      delay: 10
+      register: mongodb_status
+      until: mongodb_status is success
+
+    - name: Write initial MongoDB replicaset status
+      ansible.builtin.copy:
+        dest: "{{ mongodb_cluster_state_one }}"
+        content: "{{ mongodb_status | to_nice_yaml(indent=2) }}"
+        mode: 0644
+
+
+- name: Import install playbook
+  import_playbook: nephelaiio.mongodb.install
+  vars:
+    mongodb_hosts_manage: true
+
+
+- name: Gather cluster facts
+  hosts: mongodb_mongos
+  become: true
+  tasks:
+    - name: Gather MongoDB existing replica set members
+      community.mongodb.mongodb_shell:
+        eval: "sh.status()"
+        mongo_cmd: "{{ mongodb_shell | default(omit) }}"
+      retries: 6
+      delay: 10
+      register: mongodb_status
+      until: mongodb_status is success
+
+    - name: Write initial MongoDB replicaset status
+      ansible.builtin.copy:
+        dest: "{{ mongodb_cluster_state_two }}"
+        content: "{{ mongodb_status | to_nice_yaml(indent=2) }}"
+        mode: 0644

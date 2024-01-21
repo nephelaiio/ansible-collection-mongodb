@@ -19,7 +19,7 @@
         mode: 0644
 
 
-- name: Import install playbook
+- name: Reconfigure cluster with ip addresses
   import_playbook: nephelaiio.mongodb.install
   vars:
     mongodb_hosts_manage: false
@@ -45,7 +45,7 @@
         mode: 0644
 
 
-- name: Import install playbook
+- name: Reconfigure cluster with hostnames
   import_playbook: nephelaiio.mongodb.install
   vars:
     mongodb_hosts_manage: true

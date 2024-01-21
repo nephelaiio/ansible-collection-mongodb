@@ -17,7 +17,8 @@
         content: "{{ _content | to_nice_yaml(indent=2) }}"
         mode: 0644
       vars:
-        _content: "{{ mongodb_status | nephelaiio.plugins.drop_attributes(['collections']) }}"
+        _status: "{{ mongodb_status.transformed_output.value }}"
+        _content: "{{ mongodb_status | nephelaiio.plugins.drop_attributes(['databases']) }}"
 
 
 - name: Reconfigure cluster with ip addresses
@@ -44,7 +45,8 @@
         content: "{{ _content | to_nice_yaml(indent=2) }}"
         mode: 0644
       vars:
-        _content: "{{ mongodb_status | nephelaiio.plugins.drop_attributes(['collections']) }}"
+        _status: "{{ mongodb_status.transformed_output.value }}"
+        _content: "{{ mongodb_status | nephelaiio.plugins.drop_attributes(['databases']) }}"
 
 
 - name: Reconfigure cluster with hostnames
@@ -71,4 +73,5 @@
         content: "{{ _content | to_nice_yaml(indent=2) }}"
         mode: 0644
       vars:
-        _content: "{{ mongodb_status | nephelaiio.plugins.drop_attributes(['collections']) }}"
+        _status: "{{ mongodb_status.transformed_output.value }}"
+        _content: "{{ mongodb_status | nephelaiio.plugins.drop_attributes(['databases']) }}"

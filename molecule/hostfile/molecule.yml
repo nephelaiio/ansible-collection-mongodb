@@ -52,13 +52,18 @@ provisioner:
   playbooks:
     create: ../common/create.yml
     prepare: ../common/prepare.yml
-    converge: ../common/install.yml
-    verify: ../common/verify.yml
     destroy: ../common/destroy.yml
     cleanup: ../common/cleanup.yml
   config_options:
     defaults:
       callbacks_enabled: ansible.posix.profile_tasks
+  inventory:
+    hosts:
+      all:
+        vars:
+          mongodb_cluster_state_zero: /tmp/state.0.yml
+          mongodb_cluster_state_one: /tmp/state.1.yml
+          mongodb_cluster_state_two: /tmp/state.2.yml
 verifier:
   name: ansible
 scenario:
@@ -77,5 +82,3 @@ scenario:
     - converge
     - side_effect
     - verify
-    - destroy
-    - cleanup

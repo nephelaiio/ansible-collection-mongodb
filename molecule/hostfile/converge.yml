@@ -1,0 +1,5 @@
+---
+- name: Import install playbook
+  import_playbook: nephelaiio.mongodb.install
+  vars:
+    mongodb_hosts_manage: true

@@ -1,0 +1,77 @@
+---
+- name: Gather cluster facts
+  hosts: mongodb_mongos
+  become: true
+  tasks:
+    - name: Gather MongoDB existing replica set members
+      community.mongodb.mongodb_shell:
+        eval: "sh.status()"
+        mongo_cmd: "{{ mongodb_shell | default(omit) }}"
+      register: mongodb_status
+      retries: 6
+      delay: 10
+
+    - name: Write MongoDB replicaset status
+      ansible.builtin.copy:
+        dest: "{{ mongodb_cluster_state_zero }}"
+        content: "{{ _content | to_nice_yaml(indent=2) }}"
+        mode: 0644
+      vars:
+        _status: "{{ mongodb_status.transformed_output.value }}"
+        _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"
+
+
+- name: Reconfigure cluster with ip addresses
+  import_playbook: nephelaiio.mongodb.install
+  vars:
+    mongodb_hosts_manage: false
+
+
+- name: Gather cluster facts
+  hosts: mongodb_mongos
+  become: true
+  tasks:
+    - name: Gather MongoDB existing replica set members
+      community.mongodb.mongodb_shell:
+        eval: "sh.status()"
+        mongo_cmd: "{{ mongodb_shell | default(omit) }}"
+      register: mongodb_status
+      retries: 6
+      delay: 10
+
+    - name: Write MongoDB replicaset status
+      ansible.builtin.copy:
+        dest: "{{ mongodb_cluster_state_one }}"
+        content: "{{ _content | to_nice_yaml(indent=2) }}"
+        mode: 0644
+      vars:
+        _status: "{{ mongodb_status.transformed_output.value }}"
+        _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"
+
+
+- name: Reconfigure cluster with hostnames
+  import_playbook: nephelaiio.mongodb.install
+  vars:
+    mongodb_hosts_manage: true
+
+
+- name: Gather cluster facts
+  hosts: mongodb_mongos
+  become: true
+  tasks:
+    - name: Gather MongoDB existing replica set members
+      community.mongodb.mongodb_shell:
+        eval: "sh.status()"
+        mongo_cmd: "{{ mongodb_shell | default(omit) }}"
+      register: mongodb_status
+      retries: 6
+      delay: 10
+
+    - name: Write MongoDB replicaset status
+      ansible.builtin.copy:
+        dest: "{{ mongodb_cluster_state_two }}"
+        content: "{{ _content | to_nice_yaml(indent=2) }}"
+        mode: 0644
+      vars:
+        _status: "{{ mongodb_status.transformed_output.value }}"
+        _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"

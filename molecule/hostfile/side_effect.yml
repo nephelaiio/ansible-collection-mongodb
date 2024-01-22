@@ -18,7 +18,7 @@
         mode: 0644
       vars:
         _status: "{{ mongodb_status.transformed_output.value }}"
-        _content: "{{ mongodb_status | nephelaiio.plugins.drop_attributes(['databases']) }}"
+        _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"
 
 
 - name: Reconfigure cluster with ip addresses
@@ -46,7 +46,7 @@
         mode: 0644
       vars:
         _status: "{{ mongodb_status.transformed_output.value }}"
-        _content: "{{ mongodb_status | nephelaiio.plugins.drop_attributes(['databases']) }}"
+        _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"
 
 
 - name: Reconfigure cluster with hostnames
@@ -74,4 +74,4 @@
         mode: 0644
       vars:
         _status: "{{ mongodb_status.transformed_output.value }}"
-        _content: "{{ mongodb_status | nephelaiio.plugins.drop_attributes(['databases']) }}"
+        _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"

@@ -8,7 +8,6 @@
   vars_files:
     - main.yml
   roles:
-    - nephelaiio.mongodb.plugins
     - nephelaiio.mongodb.pip
   tasks:
     - name: Add host entries for cluster members

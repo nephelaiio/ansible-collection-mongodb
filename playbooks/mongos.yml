@@ -7,6 +7,8 @@
   become: true
   vars_files:
     - main.yml
+  roles:
+    - nephelaiio.mongodb.plugins
 
 
 - name: Deploy MongoDB Mongos servers
@@ -20,6 +22,7 @@
     _config_addrs: "{{ _config_hosts | map('extract', hostvars, __mongodb_address_attrs) | list }}"
     mongos_replicaset_config_members: "{{ _config_hosts if _mongodb_hosts_manage else _config_addrs }}"
   roles:
+    - nephelaiio.mongodb.plugins
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongos
 
@@ -29,6 +32,8 @@
   become: true
   vars_files:
     - main.yml
+  roles:
+    - nephelaiio.mongodb.plugins
   tasks:
     - name: Register cluster shards
       when: mongodb_shard_clusters is defined

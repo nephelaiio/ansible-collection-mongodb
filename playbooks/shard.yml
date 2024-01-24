@@ -3,6 +3,8 @@
   hosts: "{{ mongodb_shard | default('mongodb_shard') }}"
   vars_files:
     - main.yml
+  roles:
+    - nephelaiio.mongodb.plugins
   tasks:
     - name: Gather service facts
       ansible.builtin.service_facts:
@@ -35,6 +37,7 @@
   vars_files:
     - main.yml
   roles:
+    - nephelaiio.mongodb.plugins
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongodb
 
@@ -46,5 +49,6 @@
   vars_files:
     - main.yml
   roles:
+    - nephelaiio.mongodb.plugins
     - nephelaiio.mongodb.repo
     - nephelaiio.mongodb.mongodb

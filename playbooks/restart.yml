@@ -5,6 +5,8 @@
   become: true
   vars_files:
     - main.yml
+  roles:
+    - nephelaiio.mongodb.plugins
   tasks:
     - name: Include Mongos service tasks
       ansible.builtin.include_role:
@@ -27,6 +29,8 @@
   become: true
   vars_files:
     - main.yml
+  roles:
+    - nephelaiio.mongodb.plugins
   tasks:
     - name: Include Mongos service tasks
       ansible.builtin.include_role:
@@ -49,6 +53,8 @@
   serial: 1
   vars_files:
     - main.yml
+  roles:
+    - nephelaiio.mongodb.plugins
   tasks:
     - name: Include Mongos service tasks
       ansible.builtin.include_role:

@@ -9,6 +9,7 @@
     update_reboot: false
     update_cache_valid_time: 1
   roles:
+    - nephelaiio.mongodb.plugins
     - nephelaiio.mongodb.update
   tasks:
     - name: Include Mongos service tasks
@@ -37,6 +38,7 @@
     update_reboot: false
     update_cache_valid_time: 1
   roles:
+    - nephelaiio.mongodb.plugins
     - nephelaiio.mongodb.update
   tasks:
     - name: Include Mongos service tasks
@@ -65,6 +67,7 @@
     update_reboot: false
     update_cache_valid_time: 1
   roles:
+    - nephelaiio.mongodb.plugins
     - nephelaiio.mongodb.update
   tasks:
     - name: Include Mongos service tasks

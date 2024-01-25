@@ -1,5 +1,5 @@
 ---
-name: hostfile
+name: libvirt
 
 on:
   pull_request:
@@ -7,17 +7,19 @@ on:
       - master
     paths:
       - 'playbooks/prepare.yml'
-      - 'molecule/hostfile/*.yml'
-      - '.github/workflows/hostfile.yml'
+      - 'molecule/hosts/*.yml'
+      - 'molecule/ipaddr/*.yml'
+      - '.github/workflows/libvirt.yml'
 
 jobs:
-  hostfile:
-    name: hostfile
+  libvirt:
+    name: libvirt
     runs-on: libvirt
     strategy:
       matrix:
         scenario:
-          - hostfile
+          - ipaddr
+          - hosts
         image:
           - https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
     steps:

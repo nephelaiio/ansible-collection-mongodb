@@ -7,42 +7,42 @@ dependency:
 driver:
   name: default
 platforms:
-  - name: mongodb-install-mongos01
+  - name: mongodb-hosts-mongos01
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_mongos
       - mongodb
-  - name: mongodb-install-mongos02
+  - name: mongodb-hosts-mongos02
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_mongos
       - mongodb
-  - name: mongodb-install-config01
+  - name: mongodb-hosts-config01
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_config
       - mongodb
-  - name: mongodb-install-config02
+  - name: mongodb-hosts-config02
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_config
       - mongodb
-  - name: mongodb-install-config03
+  - name: mongodb-hosts-config03
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_config
       - mongodb
-  - name: mongodb-install-shard01
+  - name: mongodb-hosts-shard01
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_shard1
       - mongodb
-  - name: mongodb-install-shard02
+  - name: mongodb-hosts-shard02
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_shard1
       - mongodb
-  - name: mongodb-install-shard03
+  - name: mongodb-hosts-shard03
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_shard1

@@ -787,26 +787,28 @@ test = ["ansi2html (>=1.8.0)", "ansible-lint (>=6.12.1)", "check-jsonschema", "c
 testinfra = ["pytest-testinfra (>=8.1.0)"]
 
 [[package]]
-name = "molecule-docker"
-version = "2.1.0"
-description = "Molecule aids in the development and testing of Ansible roles"
+name = "molecule-plugins"
+version = "23.5.3"
+description = "Molecule Plugins"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "molecule-docker-2.1.0.tar.gz", hash = "sha256:195b97673cbc2335cfa6810816de5cbf807507bf350a9d16ca98b224b1647145"},
-    {file = "molecule_docker-2.1.0-py3-none-any.whl", hash = "sha256:d439b075789be700b6594ed73f3254e2a25ed61dcf312d80ab6e718d13bf150e"},
+    {file = "molecule-plugins-23.5.3.tar.gz", hash = "sha256:a2b1437d532d736e3fbc6db7a69ec533e2334b2115ff9245a0b2772ed9738d23"},
+    {file = "molecule_plugins-23.5.3-py3-none-any.whl", hash = "sha256:87f8ac8d5e9fe1cbdfb784d92b1fd08e7cb11bf02a9391bb34dcb93fadf7a3fc"},
 ]
 
 [package.dependencies]
-docker = ">=4.3.1"
-molecule = ">=4.0.0"
-requests = "*"
-selinux = {version = "*", markers = "sys_platform == \"linux\" or sys_platform == \"linux2\""}
+docker = {version = ">=4.3.1", optional = true, markers = "extra == \"docker\""}
+molecule = ">=6.0.0a1"
+requests = {version = "*", optional = true, markers = "extra == \"docker\""}
+selinux = {version = "*", optional = true, markers = "(sys_platform == \"linux\" or sys_platform == \"linux2\") and extra == \"docker\""}
 
 [package.extras]
-docs = ["Sphinx", "simplejson", "sphinx-ansible-theme (>=0.2.2)"]
-lint = ["pre-commit (>=1.21.0)"]
-test = ["molecule[test]"]
+docker = ["docker (>=4.3.1)", "requests", "selinux", "selinux"]
+openstack = ["openstacksdk (>=1.1.0)"]
+selinux = ["selinux", "selinux"]
+test = ["molecule[test] (>=6.0.0a1)", "pytest-helpers-namespace (>=2019.1.8)"]
+vagrant = ["python-vagrant"]
 
 [[package]]
 name = "mypy-extensions"
@@ -1325,4 +1327,4 @@ dev = ["doc8", "flake8", "flake8-import-order", "rstcheck[sphinx]", "sphinx"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "082d79a08a2c04ff705ea82c96ba20b1979fa25e1152f056098ae408d02c6373"
+content-hash = "9447f121dc97e55390ea2b1e86c1a57d48740bf9bba9c085a749155c94bbb9e4"

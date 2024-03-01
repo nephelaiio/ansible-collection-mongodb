@@ -1,7 +1,7 @@
 ---
 - name: Update config nodes
   serial: 1
-  hosts: "{{ __mongodb_config }}"
+  hosts: "{{ __mongodb_config }}:!mongodb_update_skip"
   become: true
   vars_files:
     - main.yml
@@ -29,7 +29,7 @@
 
 - name: Update shard1 nodes
   serial: 1
-  hosts: "{{ __mongodb_shard1 }}"
+  hosts: "{{ __mongodb_shard1 }}:!mongodb_update_skip"
   become: true
   vars_files:
     - main.yml
@@ -56,7 +56,7 @@
 
 
 - name: Update Mongos nodes
-  hosts: "{{ __mongodb_mongos }}"
+  hosts: "{{ __mongodb_mongos }}:!mongodb_update_skip"
   become: true
   serial: 1
   vars_files:

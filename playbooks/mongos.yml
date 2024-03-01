@@ -19,9 +19,43 @@
     _config_hosts: "{{ groups[__mongodb_config] }}"
     _config_addrs: "{{ _config_hosts | map('extract', hostvars, __mongodb_address_attrs) | list }}"
     mongos_replicaset_config_members: "{{ _config_hosts if _mongodb_hosts_manage else _config_addrs }}"
-  roles:
-    - nephelaiio.mongodb.repo
-    - nephelaiio.mongodb.mongos
+  tasks:
+    - name: Create virtualenv
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: .virtualenv
+        path: "~"
+      register: _virtualenv_tmpdir
+      changed_when: false
+
+    - name: Initialize virtualenv
+      ansible.builtin.pip:
+        name:
+          - pymongo
+          - python-gnupg
+        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
+      changed_when: false
+
+    - name: Deploy Mongos services
+      when: mongodb_shard_clusters is defined
+      run_once: true
+      vars:
+        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+      block:
+        - name: Configure MongoDB repo
+          ansible.builtin.include_role:
+            name: nephelaiio.mongodb.repo
+
+        - name: Deploy Mongos services
+          ansible.builtin.include_role:
+            name: nephelaiio.mongodb.mongos
+
+      always:
+        - name: Destroy virtualenv
+          ansible.builtin.file:
+            path: "{{ _virtualenv_tmpdir.path }}"
+            state: absent
+          changed_when: false
 
 
 - name: Configure MongoDB cluster
@@ -30,9 +64,27 @@
   vars_files:
     - main.yml
   tasks:
+    - name: Create virtualenv
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: .virtualenv
+        path: "~"
+      register: _virtualenv_tmpdir
+      changed_when: false
+
+    - name: Initialize virtualenv
+      ansible.builtin.pip:
+        name:
+          - pymongo
+          - python-gnupg
+        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
+      changed_when: false
+
     - name: Register cluster shards
       when: mongodb_shard_clusters is defined
       run_once: true
+      vars:
+        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
       block:
         - name: Query registered shards
           community.mongodb.mongodb_shell:
@@ -75,3 +127,10 @@
             msg: "Cluster shards: {{ _shards | map(attribute='_id') | list | join (',') }}"
           vars:
             _shards: "{{ _shard_query.transformed_output.shards }}"
+
+      always:
+        - name: Destroy virtualenv
+          ansible.builtin.file:
+            path: "{{ _virtualenv_tmpdir.path }}"
+            state: absent
+          changed_when: false

@@ -11,20 +11,47 @@
   roles:
     - nephelaiio.mongodb.update
   tasks:
-    - name: Include Mongos service tasks
-      ansible.builtin.include_role:
-        name: nephelaiio.mongodb.mongodb
-        tasks_from: service
+    - name: Create virtualenv
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: .virtualenv
+        path: "~"
+      register: _virtualenv_tmpdir
+      changed_when: false
 
-    - name: Reboot node
-      ansible.builtin.reboot:
+    - name: Initialize virtualenv
+      ansible.builtin.pip:
+        name:
+          - pymongo
+          - python-gnupg
+        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
+      changed_when: false
 
-    - name: Wait for replica set to stabilize
-      community.mongodb.mongodb_status:
-        replica_set: "{{ mongos_replicaset_config_name | default('config') }}"
-        validate: minimal
-        poll: "{{ _mongodb_reconfig_poll }}"
-        interval: "{{ _mongodb_reconfig_interval }}"
+    - name: Restart Mongos services
+      vars:
+        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+      block:
+        - name: Include Mongos service tasks
+          ansible.builtin.include_role:
+            name: nephelaiio.mongodb.mongodb
+            tasks_from: service
+
+        - name: Reboot node
+          ansible.builtin.reboot:
+
+        - name: Wait for replica set to stabilize
+          community.mongodb.mongodb_status:
+            replica_set: "{{ mongos_replicaset_config_name | default('config') }}"
+            validate: minimal
+            poll: "{{ _mongodb_reconfig_poll }}"
+            interval: "{{ _mongodb_reconfig_interval }}"
+
+      always:
+        - name: Destroy virtualenv
+          ansible.builtin.file:
+            path: "{{ _virtualenv_tmpdir.path }}"
+            state: absent
+          changed_when: false
 
 
 - name: Update shard1 nodes
@@ -39,20 +66,47 @@
   roles:
     - nephelaiio.mongodb.update
   tasks:
-    - name: Include Mongos service tasks
-      ansible.builtin.include_role:
-        name: nephelaiio.mongodb.mongodb
-        tasks_from: service
+    - name: Create virtualenv
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: .virtualenv
+        path: "~"
+      register: _virtualenv_tmpdir
+      changed_when: false
 
-    - name: Reboot node
-      ansible.builtin.reboot:
+    - name: Initialize virtualenv
+      ansible.builtin.pip:
+        name:
+          - pymongo
+          - python-gnupg
+        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
+      changed_when: false
 
-    - name: Wait for replica set to stabilize
-      community.mongodb.mongodb_status:
-        replica_set: "{{ mongos_replicaset_shard1_name | default('shard1') }}"
-        validate: minimal
-        poll: "{{ _mongodb_reconfig_poll }}"
-        interval: "{{ _mongodb_reconfig_interval }}"
+    - name: Restart Mongos services
+      vars:
+        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+      block:
+        - name: Include Mongos service tasks
+          ansible.builtin.include_role:
+            name: nephelaiio.mongodb.mongodb
+            tasks_from: service
+
+        - name: Reboot node
+          ansible.builtin.reboot:
+
+        - name: Wait for replica set to stabilize
+          community.mongodb.mongodb_status:
+            replica_set: "{{ mongos_replicaset_shard1_name | default('shard1') }}"
+            validate: minimal
+            poll: "{{ _mongodb_reconfig_poll }}"
+            interval: "{{ _mongodb_reconfig_interval }}"
+
+      always:
+        - name: Destroy virtualenv
+          ansible.builtin.file:
+            path: "{{ _virtualenv_tmpdir.path }}"
+            state: absent
+          changed_when: false
 
 
 - name: Update Mongos nodes
@@ -67,18 +121,45 @@
   roles:
     - nephelaiio.mongodb.update
   tasks:
-    - name: Include Mongos service tasks
-      ansible.builtin.include_role:
-        name: nephelaiio.mongodb.mongos
-        tasks_from: service
-
-    - name: Reboot node
-      ansible.builtin.reboot:
-
-    - name: Check Mongos cluster status
-      community.mongodb.mongodb_shell:
-        login_database: "admin"
-        eval: "sh.status()"
-      retries: "{{ _mongodb_reconfig_poll }}"
-      delay: "{{ _mongodb_reconfig_interval }}"
+    - name: Create virtualenv
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: .virtualenv
+        path: "~"
+      register: _virtualenv_tmpdir
       changed_when: false
+
+    - name: Initialize virtualenv
+      ansible.builtin.pip:
+        name:
+          - pymongo
+          - python-gnupg
+        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
+      changed_when: false
+
+    - name: Restart Mongos services
+      vars:
+        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+      block:
+        - name: Include Mongos service tasks
+          ansible.builtin.include_role:
+            name: nephelaiio.mongodb.mongos
+            tasks_from: service
+
+        - name: Reboot node
+          ansible.builtin.reboot:
+
+        - name: Check Mongos cluster status
+          community.mongodb.mongodb_shell:
+            login_database: "admin"
+            eval: "sh.status()"
+          retries: "{{ _mongodb_reconfig_poll }}"
+          delay: "{{ _mongodb_reconfig_interval }}"
+          changed_when: false
+
+      always:
+        - name: Destroy virtualenv
+          ansible.builtin.file:
+            path: "{{ _virtualenv_tmpdir.path }}"
+            state: absent
+          changed_when: false

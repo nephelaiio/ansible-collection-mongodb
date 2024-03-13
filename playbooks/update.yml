@@ -1,7 +1,7 @@
 ---
 - name: Update config nodes
   serial: 1
-  hosts: "{{ __mongodb_config }}:!mongodb_update_skip"
+  hosts: "{{ __mongodb_config }}:!{{ mongodb_update_skip_group | default('mongodb_update_skip') }}"
   become: true
   vars_files:
     - main.yml
@@ -27,7 +27,7 @@
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 
-    - name: Restart Mongos services
+    - name: Stop Mongos services
       vars:
         ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
       block:
@@ -35,6 +35,8 @@
           ansible.builtin.include_role:
             name: nephelaiio.mongodb.mongodb
             tasks_from: service
+          vars:
+            mongodb_service_state: stopped
 
         - name: Reboot node
           ansible.builtin.reboot:
@@ -56,7 +58,7 @@
 
 - name: Update shard1 nodes
   serial: 1
-  hosts: "{{ __mongodb_shard1 }}:!mongodb_update_skip"
+  hosts: "{{ __mongodb_shard1 }}:!{{ mongodb_update_skip_group | default('mongodb_update_skip') }}"
   become: true
   vars_files:
     - main.yml
@@ -82,7 +84,7 @@
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 
-    - name: Restart Mongos services
+    - name: Stop Mongos services
       vars:
         ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
       block:
@@ -90,6 +92,8 @@
           ansible.builtin.include_role:
             name: nephelaiio.mongodb.mongodb
             tasks_from: service
+          vars:
+            mongodb_service_state: stopped
 
         - name: Reboot node
           ansible.builtin.reboot:
@@ -110,7 +114,7 @@
 
 
 - name: Update Mongos nodes
-  hosts: "{{ __mongodb_mongos }}:!mongodb_update_skip"
+  hosts: "{{ __mongodb_mongos }}:!{{ mongodb_update_skip_group | default('mongodb_update_skip') }}"
   become: true
   serial: 1
   vars_files:
@@ -137,7 +141,7 @@
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 
-    - name: Restart Mongos services
+    - name: Stop Mongos services
       vars:
         ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
       block:
@@ -145,6 +149,8 @@
           ansible.builtin.include_role:
             name: nephelaiio.mongodb.mongos
             tasks_from: service
+          vars:
+            mongodb_service_state: stopped
 
         - name: Reboot node
           ansible.builtin.reboot:

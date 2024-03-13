@@ -114,7 +114,7 @@
 
 
 - name: Update Mongos nodes
-  hosts: "{{ __mongodb_mongos }}:!mongodb_update_skip"
+  hosts: "{{ __mongodb_mongos }}:!{{ mongodb_update_skip_group | default('mongodb_update_skip') }}"
   become: true
   serial: 1
   vars_files:

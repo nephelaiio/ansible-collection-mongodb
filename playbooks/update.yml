@@ -40,6 +40,7 @@
 
         - name: Reboot node
           ansible.builtin.reboot:
+          when: update_reboot | bool
 
         - name: Wait for replica set to stabilize
           community.mongodb.mongodb_status:
@@ -97,6 +98,7 @@
 
         - name: Reboot node
           ansible.builtin.reboot:
+          when: update_reboot | bool
 
         - name: Wait for replica set to stabilize
           community.mongodb.mongodb_status:
@@ -154,6 +156,7 @@
 
         - name: Reboot node
           ansible.builtin.reboot:
+          when: update_reboot | bool
 
         - name: Check Mongos cluster status
           community.mongodb.mongodb_shell:

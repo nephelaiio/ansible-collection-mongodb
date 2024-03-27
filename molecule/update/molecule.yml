@@ -124,7 +124,7 @@ provisioner:
   playbooks:
     prepare: ../common/prepare.yml
     converge: ../common/install.yml
-    side_effect: ../common/restart.yml
+    side_effect: ../common/update.yml
     verify: ../common/verify.yml
   config_options:
     defaults:

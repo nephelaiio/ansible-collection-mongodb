@@ -119,7 +119,6 @@
         - name: Manage KVM guests
           when: inventory_hostname not in guest_query.stdout_lines
           block:
-
             - name: Create KVM guest disks
               ansible.builtin.copy:
                 remote_src: true
@@ -182,12 +181,16 @@
                     xml: "{{ lookup('ansible.builtin.template', 'vm.j2.xml') }}"
                     command: define
                   vars:
+                    _platforms: "{{ molecule_yml.platforms }}"
+                    _platform: "{{ _platforms | selectattr('name', 'equalto', inventory_hostname) | first }}"
                     guest_hostname: "{{ inventory_hostname }}"
                     guest_disk_format: qcow2
                     guest_disk_path: "{{ _libvirt_path }}/{{ inventory_hostname }}.img"
                     guest_iso_path: "{{ _libvirt_path }}/{{ inventory_hostname }}.iso"
                     guest_network: "{{ _libvirt_network }}"
                     guest_mac: "{{ '52:54:00' | random_mac(seed=guest_hostname) }}"
+                    guest_mem: "{{ (_platform.mem | default(2)) * 1048576 }}"
+                    guest_cpu: "{{ _platform.cpu | default(2) }}"
                   loop_control:
                     label: "{{ inventory_hostname }} - {{ _libvirt_path }}/{{ inventory_hostname }}.img"
 

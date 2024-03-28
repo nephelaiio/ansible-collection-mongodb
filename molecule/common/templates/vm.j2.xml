@@ -1,7 +1,7 @@
 <domain type='kvm'>
   <name>{{ guest_hostname }}</name>
-  <memory unit='KiB'>{{ guest_memory }}</memory>
-  <currentMemory unit='KiB'>{{ guest_memory }}</currentMemory>
+  <memory unit='KiB'>{{ guest_mem }}</memory>
+  <currentMemory unit='KiB'>{{ guest_mem }}</currentMemory>
   <vcpu placement='static'>{{ guest_cpu }}</vcpu>
   <resource>
     <partition>/machine</partition>

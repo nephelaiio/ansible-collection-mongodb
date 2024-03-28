@@ -7,6 +7,9 @@ on:
       - master
     paths:
       - 'playbooks/prepare.yml'
+      - 'molecule/common/create.yml'
+      - 'molecule/common/templates/*.yml'
+      - 'molecule/common/vars.yml'
       - 'molecule/hosts/*.yml'
       - 'molecule/ipaddr/*.yml'
       - '.github/workflows/libvirt.yml'

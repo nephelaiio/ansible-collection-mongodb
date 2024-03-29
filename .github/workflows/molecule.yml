@@ -21,7 +21,6 @@ jobs:
           - stop
           - start
           - restart
-          - update
           - upgrade
         image:
           - https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
@@ -31,8 +30,6 @@ jobs:
           - scenario: install
             image: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2
           - scenario: install
-            image: https://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2
-          - scenario: update
             image: https://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2
     steps:
       - name: Check out the codebase

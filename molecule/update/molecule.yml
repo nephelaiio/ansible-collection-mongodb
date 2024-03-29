@@ -50,7 +50,10 @@ platforms:
 provisioner:
   name: ansible
   playbooks:
+    create: ../common/create.yml
     prepare: ../common/prepare.yml
+    destroy: ../common/destroy.yml
+    cleanup: ../common/cleanup.yml
     converge: ../common/install.yml
     side_effect: ../common/update.yml
     verify: ../common/verify.yml

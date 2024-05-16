@@ -123,10 +123,6 @@ provisioner:
   name: ansible
   playbooks:
     prepare: ../common/prepare.yml
-<<<<<<< Updated upstream
-=======
-    destroy: ../common/destroy.yml
->>>>>>> Stashed changes
     converge: ../common/install.yml
     side_effect: ../common/restart.yml
     verify: ../common/verify.yml

@@ -17,6 +17,7 @@ ansible-lint = { version = "^6.20.3", markers = "platform_system != 'Windows'" }
 libvirt-python = "^9.10.0"
 lxml = "^5.1.0"
 molecule-plugins = {extras = ["docker"], version = "^23.5.3"}
+passlib = "^1.7.4"
 
 [build-system]
 requires = ["poetry-core"]

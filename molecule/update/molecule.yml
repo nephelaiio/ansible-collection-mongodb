@@ -123,6 +123,10 @@ provisioner:
   name: ansible
   playbooks:
     prepare: ../common/prepare.yml
+<<<<<<< Updated upstream
+=======
+    destroy: ../common/destroy.yml
+>>>>>>> Stashed changes
     converge: ../common/install.yml
     side_effect: ../common/restart.yml
     verify: ../common/verify.yml
@@ -133,6 +137,7 @@ provisioner:
     hosts:
       all:
         vars:
+          libvirt_platforms: "{{ molecule_yml.platforms }}"
           mongodb_hosts_manage: false
 verifier:
   name: ansible

@@ -133,6 +133,7 @@ provisioner:
     hosts:
       all:
         vars:
+          libvirt_platforms: "{{ molecule_yml.platforms }}"
           mongodb_hosts_manage: false
 verifier:
   name: ansible

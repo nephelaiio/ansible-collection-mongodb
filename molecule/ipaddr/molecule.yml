@@ -53,7 +53,6 @@ provisioner:
     create: ../common/create.yml
     prepare: ../common/prepare.yml
     destroy: ../common/destroy.yml
-    cleanup: ../common/cleanup.yml
   config_options:
     defaults:
       callbacks_enabled: ansible.posix.profile_tasks
@@ -61,6 +60,7 @@ provisioner:
     hosts:
       all:
         vars:
+          libvirt_platforms: "{{ molecule_yml.platforms }}"
           mongodb_cluster_state_original: /tmp/state.0.yml
           mongodb_cluster_state_reconfig: /tmp/state.1.yml
 verifier:

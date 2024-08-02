@@ -131,6 +131,48 @@ provisioner:
       all:
         vars:
           mongodb_hosts_manage: false
+      mongodb_mongos:
+        vars:
+          mongodb_votes_group: "_replicaset_votes_mongos"
+          mongodb_non_votes_group: "_replicaset_non_votes_mongos"
+          mongodb_voting_group: "_replicaset_voting_mongos"
+          mongodb_priority_group: "_replicaset_priority_mongos"
+          mongodb_non_priority_group: "_replicaset_non_priority_mongos"
+          mongodb_compliant_group: "_replicaset_compliant_mongos"
+          mongodb_non_compliant_group: "_replicaset_non_compliant_mongos"
+          mongodb_non_voting_group: "_replicaset_non_voting_mongos"
+          mongodb_alien_group: "_replicaset_alien_mongos"
+          mongodb_non_alien_group: "_replicaset_non_alien_mongos"
+          mongodb_member_group: "_replicaset_member_mongos"
+          mongodb_failed_group: "_replicaset_failed_mongos"
+      mongodb_config:
+        vars:
+          mongodb_votes_group: "_replicaset_votes_config"
+          mongodb_non_votes_group: "_replicaset_non_votes_config"
+          mongodb_voting_group: "_replicaset_voting_config"
+          mongodb_priority_group: "_replicaset_priority_config"
+          mongodb_non_priority_group: "_replicaset_non_priority_config"
+          mongodb_compliant_group: "_replicaset_compliant_config"
+          mongodb_non_compliant_group: "_replicaset_non_compliant_config"
+          mongodb_non_voting_group: "_replicaset_non_voting_config"
+          mongodb_alien_group: "_replicaset_alien_config"
+          mongodb_non_alien_group: "_replicaset_non_alien_config"
+          mongodb_member_group: "_replicaset_member_config"
+          mongodb_failed_group: "_replicaset_failed_config"
+      mongodb_shard1:
+        vars:
+          mongodb_votes_group: "_replicaset_votes_shard1"
+          mongodb_non_votes_group: "_replicaset_non_votes_shard1"
+          mongodb_voting_group: "_replicaset_voting_shard1"
+          mongodb_priority_group: "_replicaset_priority_shard1"
+          mongodb_non_priority_group: "_replicaset_non_priority_shard1"
+          mongodb_compliant_group: "_replicaset_compliant_shard1"
+          mongodb_non_compliant_group: "_replicaset_non_compliant_shard1"
+          mongodb_non_voting_group: "_replicaset_non_voting_shard1"
+          mongodb_alien_group: "_replicaset_alien_shard1"
+          mongodb_non_alien_group: "_replicaset_non_alien_shard1"
+          mongodb_member_group: "_replicaset_member_shard1"
+          mongodb_failed_group: "_replicaset_failed_shard1"
 verifier:
   name: ansible
 scenario:

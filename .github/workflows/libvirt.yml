@@ -4,14 +4,6 @@ on:
   pull_request:
     branches:
       - master
-    paths:
-      - "playbooks/prepare.yml"
-      - "molecule/common/create.yml"
-      - "molecule/common/templates/*.yml"
-      - "molecule/common/vars.yml"
-      - "molecule/hosts/*.yml"
-      - "molecule/ipaddr/*.yml"
-      - ".github/workflows/libvirt.yml"
 jobs:
   libvirt:
     name: libvirt
@@ -28,7 +20,7 @@ jobs:
       - name: Run molecule test
         uses: pokerops/ansible-utils@master
         with:
-          run: "make test"
+          run: "make install requirements test"
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"

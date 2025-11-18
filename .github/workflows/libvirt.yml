@@ -12,6 +12,7 @@ on:
       - "molecule/hosts/*.yml"
       - "molecule/ipaddr/*.yml"
       - ".github/workflows/libvirt.yml"
+jobs:
   libvirt:
     name: libvirt
     runs-on: libvirt

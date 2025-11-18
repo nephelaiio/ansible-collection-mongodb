@@ -55,7 +55,6 @@
             state: absent
           changed_when: false
 
-
 - name: Update shard1 nodes
   serial: 1
   hosts: "{{ __mongodb_shard1 }}:!{{ mongodb_update_skip_group | default('mongodb_update_skip') }}"
@@ -111,7 +110,6 @@
             path: "{{ _virtualenv_tmpdir.path }}"
             state: absent
           changed_when: false
-
 
 - name: Update Mongos nodes
   hosts: "{{ __mongodb_mongos }}:!{{ mongodb_update_skip_group | default('mongodb_update_skip') }}"

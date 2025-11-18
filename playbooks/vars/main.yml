@@ -8,4 +8,4 @@ _mongodb_hosts_manage: "{{ mongodb_hosts_manage | default(True) }}"
 __mongodb_mongos: "{{ mongodb_mongos | default('mongodb_mongos') }}"
 __mongodb_config: "{{ mongodb_config | default('mongodb_config') }}"
 __mongodb_shard1: "{{ mongodb_shard1 | default('mongodb_shard1') }}"
-__mongodb_address_attrs: ['ansible_default_ipv4', 'address']
+__mongodb_address_attrs: ["ansible_default_ipv4", "address"]

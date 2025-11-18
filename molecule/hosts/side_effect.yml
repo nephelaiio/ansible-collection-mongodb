@@ -20,12 +20,10 @@
         _status: "{{ mongodb_status.transformed_output.value }}"
         _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"
 
-
 - name: Reconfigure cluster with ip addresses
   import_playbook: nephelaiio.mongodb.install
   vars:
     mongodb_hosts_manage: false
-
 
 - name: Gather cluster facts
   hosts: mongodb_mongos

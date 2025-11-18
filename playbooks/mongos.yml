@@ -8,7 +8,6 @@
   vars_files:
     - main.yml
 
-
 - name: Deploy MongoDB Mongos servers
   hosts: "{{ __mongodb_mongos }}"
   become: true
@@ -54,7 +53,6 @@
             path: "{{ _virtualenv_tmpdir.path }}"
             state: absent
           changed_when: false
-
 
 - name: Configure MongoDB cluster
   hosts: "{{ __mongodb_mongos }}"

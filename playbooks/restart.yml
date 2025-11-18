@@ -47,7 +47,6 @@
             state: absent
           changed_when: false
 
-
 - name: Restart shard1 services
   serial: 1
   hosts: "{{ __mongodb_shard1 }}"
@@ -95,7 +94,6 @@
             path: "{{ _virtualenv_tmpdir.path }}"
             state: absent
           changed_when: false
-
 
 - name: Restart Mongos services
   hosts: "{{ __mongodb_mongos }}"

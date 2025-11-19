@@ -8,7 +8,6 @@
   vars_files:
     - main.yml
 
-
 - name: Deploy MongoDB Mongos servers
   hosts: "{{ __mongodb_mongos }}"
   become: true
@@ -30,9 +29,7 @@
 
     - name: Initialize virtualenv
       ansible.builtin.pip:
-        name:
-          - pymongo
-          - python-gnupg
+        name: "{{ _mongodb_virtualenv_packages }}"
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 
@@ -55,7 +52,6 @@
             state: absent
           changed_when: false
 
-
 - name: Configure MongoDB cluster
   hosts: "{{ __mongodb_mongos }}"
   become: true
@@ -72,9 +68,7 @@
 
     - name: Initialize virtualenv
       ansible.builtin.pip:
-        name:
-          - pymongo
-          - python-gnupg
+        name: "{{ _mongodb_virtualenv_packages }}"
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 

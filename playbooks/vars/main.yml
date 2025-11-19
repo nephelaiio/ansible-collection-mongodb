@@ -4,8 +4,12 @@ _mongodb_service_name: "{{ mongodb_service_name | default('mongod') }}"
 _mongodb_reconfig_poll: "{{ mongodb_reconfig_poll | default(6) }}"
 _mongodb_reconfig_interval: "{{ mongodb_reconfig_interval | default(10) }}"
 _mongodb_hosts_manage: "{{ mongodb_hosts_manage | default(True) }}"
+_mongodb_virtualenv_packages:
+  - pymongo
+  - python-gnupg
+  - python-debian
 
 __mongodb_mongos: "{{ mongodb_mongos | default('mongodb_mongos') }}"
 __mongodb_config: "{{ mongodb_config | default('mongodb_config') }}"
 __mongodb_shard1: "{{ mongodb_shard1 | default('mongodb_shard1') }}"
-__mongodb_address_attrs: ['ansible_default_ipv4', 'address']
+__mongodb_address_attrs: ["ansible_default_ipv4", "address"]

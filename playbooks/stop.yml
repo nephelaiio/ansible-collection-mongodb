@@ -12,7 +12,6 @@
       vars:
         mongos_service_state: stopped
 
-
 - name: Stop mongod services
   hosts:
     - "{{ __mongodb_config }}"

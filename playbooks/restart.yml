@@ -16,9 +16,7 @@
 
     - name: Initialize virtualenv
       ansible.builtin.pip:
-        name:
-          - pymongo
-          - python-gnupg
+        name: "{{ _mongodb_virtualenv_packages }}"
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 
@@ -47,7 +45,6 @@
             state: absent
           changed_when: false
 
-
 - name: Restart shard1 services
   serial: 1
   hosts: "{{ __mongodb_shard1 }}"
@@ -65,9 +62,7 @@
 
     - name: Initialize virtualenv
       ansible.builtin.pip:
-        name:
-          - pymongo
-          - python-gnupg
+        name: "{{ _mongodb_virtualenv_packages }}"
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 
@@ -96,7 +91,6 @@
             state: absent
           changed_when: false
 
-
 - name: Restart Mongos services
   hosts: "{{ __mongodb_mongos }}"
   become: true
@@ -114,9 +108,7 @@
 
     - name: Initialize virtualenv
       ansible.builtin.pip:
-        name:
-          - pymongo
-          - python-gnupg
+        name: "{{ _mongodb_virtualenv_packages }}"
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 

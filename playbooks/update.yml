@@ -21,9 +21,7 @@
 
     - name: Initialize virtualenv
       ansible.builtin.pip:
-        name:
-          - pymongo
-          - python-gnupg
+        name: "{{ _mongodb_virtualenv_packages }}"
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 
@@ -55,7 +53,6 @@
             state: absent
           changed_when: false
 
-
 - name: Update shard1 nodes
   serial: 1
   hosts: "{{ __mongodb_shard1 }}:!{{ mongodb_update_skip_group | default('mongodb_update_skip') }}"
@@ -78,9 +75,7 @@
 
     - name: Initialize virtualenv
       ansible.builtin.pip:
-        name:
-          - pymongo
-          - python-gnupg
+        name: "{{ _mongodb_virtualenv_packages }}"
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 
@@ -112,7 +107,6 @@
             state: absent
           changed_when: false
 
-
 - name: Update Mongos nodes
   hosts: "{{ __mongodb_mongos }}:!{{ mongodb_update_skip_group | default('mongodb_update_skip') }}"
   become: true
@@ -135,9 +129,7 @@
 
     - name: Initialize virtualenv
       ansible.builtin.pip:
-        name:
-          - pymongo
-          - python-gnupg
+        name: "{{ _mongodb_virtualenv_packages }}"
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 

@@ -15,17 +15,15 @@
       ansible.builtin.copy:
         dest: "{{ mongodb_cluster_state_original }}"
         content: "{{ _content | to_nice_yaml(indent=2) }}"
-        mode: 0644
+        mode: "u=rw,go=r"
       vars:
         _status: "{{ mongodb_status.transformed_output.value }}"
         _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"
-
 
 - name: Reconfigure cluster with ip addresses
   import_playbook: nephelaiio.mongodb.install
   vars:
     mongodb_hosts_manage: false
-
 
 - name: Gather cluster facts
   hosts: mongodb_mongos
@@ -43,7 +41,7 @@
       ansible.builtin.copy:
         dest: "{{ mongodb_cluster_state_reconfig }}"
         content: "{{ _content | to_nice_yaml(indent=2) }}"
-        mode: 0644
+        mode: "u=rw,go=r"
       vars:
         _status: "{{ mongodb_status.transformed_output.value }}"
         _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"

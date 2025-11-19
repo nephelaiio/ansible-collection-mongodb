@@ -12,7 +12,6 @@
         name: nephelaiio.mongodb.mongodb
         tasks_from: service
 
-
 - name: Start Mongos services
   hosts: "{{ __mongodb_mongos }}"
   become: true

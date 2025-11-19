@@ -29,9 +29,7 @@
 
     - name: Initialize virtualenv
       ansible.builtin.pip:
-        name:
-          - pymongo
-          - python-gnupg
+        name: "{{ _mongodb_virtualenv_packages }}"
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 
@@ -70,9 +68,7 @@
 
     - name: Initialize virtualenv
       ansible.builtin.pip:
-        name:
-          - pymongo
-          - python-gnupg
+        name: "{{ _mongodb_virtualenv_packages }}"
         virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
       changed_when: false
 

@@ -20,8 +20,10 @@ jobs:
           - update
           - upgrade
         image:
-          - https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+          - https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
         include:
+          - scenario: install
+            image: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
           - scenario: install
             image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
           - scenario: install

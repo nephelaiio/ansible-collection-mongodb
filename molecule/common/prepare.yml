@@ -22,7 +22,6 @@
       ansible.builtin.package:
         name: virtualenv
 
-
 - name: Load kernel modules
   hosts: localhost
   become: true

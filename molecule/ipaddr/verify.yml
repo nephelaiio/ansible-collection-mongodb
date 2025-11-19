@@ -1,7 +1,13 @@
 ---
 - name: Verify shard registration
   hosts: mongodb_mongos
+  vars:
+    mongodb_cluster_verification_command: >
+      diff {{ mongodb_cluster_state_original }} {{ mongodb_cluster_state_reconfig }}
   tasks:
     - name: Verify cluster ip reconfig state
-      ansible.builtin.command: |
-        diff {{ mongodb_cluster_state_original }} {{ mongodb_cluster_state_reconfig }}
+      ansible.builtin.debug:
+        msg: "{{ mongodb_cluster_verification_command }}"
+
+    - name: Verify cluster ip reconfig state
+      ansible.builtin.command: "{{ mongodb_cluster_verification_command }}"

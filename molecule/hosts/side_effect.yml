@@ -15,7 +15,7 @@
       ansible.builtin.copy:
         dest: "{{ mongodb_cluster_state_original }}"
         content: "{{ _content | to_nice_yaml(indent=2) }}"
-        mode: 0644
+        mode: "u=rw,go=r"
       vars:
         _status: "{{ mongodb_status.transformed_output.value }}"
         _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"
@@ -41,7 +41,7 @@
       ansible.builtin.copy:
         dest: "{{ mongodb_cluster_state_reconfig }}"
         content: "{{ _content | to_nice_yaml(indent=2) }}"
-        mode: 0644
+        mode: "u=rw,go=r"
       vars:
         _status: "{{ mongodb_status.transformed_output.value }}"
         _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"

@@ -7,18 +7,18 @@ An [ansible collection](https://galaxy.ansible.com/ui/repo/published/nephelaiio/
 
 ## Collection roles
 
-* nephelaiio.mongodb.repo
-* nephelaiio.mongodb.mongos
-* nephelaiio.mongodb.mongodb
+- nephelaiio.mongodb.repo
+- nephelaiio.mongodb.mongos
+- nephelaiio.mongodb.mongodb
 
 ## Collection playbooks
 
-* nephelaiio.mongodb.install: Install and (re)configure cluster
-* nephelaiio.mongodb.offline: Stop mongos cluster services
-* nephelaiio.mongodb.online: Start mongos cluster services
-* nephelaiio.mongodb.stop: Stop all cluster services
-* nephelaiio.mongodb.start: Start all cluster services
-* nephelaiio.mongodb.update: Perform cluster-safe os updates
+- nephelaiio.mongodb.install: Install and (re)configure cluster
+- nephelaiio.mongodb.offline: Stop mongos cluster services
+- nephelaiio.mongodb.online: Start mongos cluster services
+- nephelaiio.mongodb.stop: Stop all cluster services
+- nephelaiio.mongodb.start: Start all cluster services
+- nephelaiio.mongodb.update: Perform cluster-safe os updates
 
 ## Testing
 
@@ -26,15 +26,14 @@ Please make sure your environment has [docker](https://www.docker.com) installed
 
 Role is tested against the following distributions (docker images):
 
-  * Ubuntu Jammy
-  * Ubuntu Focal
-  * Debian Bullseye
-  * Rocky Linux 9
+- Ubuntu Noble
+- Ubuntu Jammy
+- Ubuntu Focal
+- Debian Bullseye
+- Rocky Linux 9
 
 You can test the collection directly from sources using command `make test`
 
 ## License
 
 This project is licensed under the terms of the [MIT License](/LICENSE)
-
-

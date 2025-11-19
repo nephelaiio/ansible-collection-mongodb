@@ -1,7 +1,7 @@
 ---
 namespace: nephelaiio
 name: mongodb
-version: 0.3.1
+version: 0.3.2
 readme: README.md
 authors:
   - Ted Cook <teddyphreak@users.noreply.github.com>
@@ -18,4 +18,11 @@ repository: http://github.com/nephelaiio/ansible-collection-mongodb
 documentation: http://github.com/nephelaiio/ansible-collection-mongodb
 homepage: http://github.com/nephelaiio/ansible-collection-mongodb
 issues: http://github.com/nephelaiio/ansible-collection-mongodb
-build_ignore: []
+build_ignore:
+  - .git
+  - .devbox
+  - .venv
+  - .ansible
+  - ansible_collections
+  - argocd
+  - libvirt

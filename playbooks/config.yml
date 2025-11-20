@@ -38,6 +38,18 @@
     - name: Deploy MongDB config replicaset
       vars:
         ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+        mongodb_votes_group: "_replicaset_votes_config"
+        mongodb_non_votes_group: "_replicaset_non_votes_config"
+        mongodb_voting_group: "_replicaset_voting_config"
+        mongodb_priority_group: "_replicaset_priority_config"
+        mongodb_non_priority_group: "_replicaset_non_priority_config"
+        mongodb_compliant_group: "_replicaset_compliant_config"
+        mongodb_non_compliant_group: "_replicaset_non_compliant_config"
+        mongodb_non_voting_group: "_replicaset_non_voting_config"
+        mongodb_alien_group: "_replicaset_alien_config"
+        mongodb_non_alien_group: "_replicaset_non_alien_config"
+        mongodb_member_group: "_replicaset_member_config"
+        mongodb_failed_group: "_replicaset_failed_config"
       block:
         - name: Configure MongoDB repo
           ansible.builtin.include_role:

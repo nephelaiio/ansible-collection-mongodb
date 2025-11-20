@@ -36,6 +36,18 @@
     - name: Deploy Mongos services
       vars:
         ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+        mongodb_votes_group: "_replicaset_votes_mongos"
+        mongodb_non_votes_group: "_replicaset_non_votes_mongos"
+        mongodb_voting_group: "_replicaset_voting_mongos"
+        mongodb_priority_group: "_replicaset_priority_mongos"
+        mongodb_non_priority_group: "_replicaset_non_priority_mongos"
+        mongodb_compliant_group: "_replicaset_compliant_mongos"
+        mongodb_non_compliant_group: "_replicaset_non_compliant_mongos"
+        mongodb_non_voting_group: "_replicaset_non_voting_mongos"
+        mongodb_alien_group: "_replicaset_alien_mongos"
+        mongodb_non_alien_group: "_replicaset_non_alien_mongos"
+        mongodb_member_group: "_replicaset_member_mongos"
+        mongodb_failed_group: "_replicaset_failed_mongos"
       block:
         - name: Configure MongoDB repo
           ansible.builtin.include_role:

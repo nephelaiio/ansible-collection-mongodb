@@ -38,6 +38,19 @@
     - name: Deploy MongDB config replicaset
       vars:
         ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+        mongodb_shard_name_default: shard1
+        mongodb_votes_group: "_replicaset_votes_{{ mongodb_shard_name | default(mongodb_shard_name_default) }}"
+        mongodb_non_votes_group: "_replicaset_non_votes_{{ mongodb_shard_name | default(mongodb_shard_name_default) }}"
+        mongodb_voting_group: "_replicaset_voting_{{ mongodb_shard_name | default(mongodb_shard_name_default) }}"
+        mongodb_priority_group: "_replicaset_priority_{{ mongodb_shard_name | default(mongodb_shard_name_default) }}"
+        mongodb_non_priority_group: "_replicaset_non_priority_{{ mongodb_shard_name | default(mongodb_shard_name_default) }}"
+        mongodb_compliant_group: "_replicaset_compliant_{{ mongodb_shard_name | default(mongodb_shard_name_default) }}"
+        mongodb_non_compliant_group: "_replicaset_non_compliant_{{ mongodb_shard_name | default(mongodb_shard_name_default) }}"
+        mongodb_non_voting_group: "_replicaset_non_voting_{{ mongodb_shard_name | default(mongodb_shard_name_default) }}"
+        mongodb_alien_group: "_replicaset_alien_{{ mongodb_shard_name | default(mongodb_shard_name_default) }}"
+        mongodb_non_alien_group: "_replicaset_non_alien_{{ mongodb_shard_name | default(mongodb_shard_name_default) }}"
+        mongodb_member_group: "_replicaset_member_{{ mongodb_shard_name | default(mongodb_shard_name_default) }}"
+        mongodb_failed_group: "_replicaset_failed_{{ mongodb_shard_name | default(mongodb_shard_name_default) }}"
       block:
         - name: Configure MongoDB repo
           ansible.builtin.include_role:

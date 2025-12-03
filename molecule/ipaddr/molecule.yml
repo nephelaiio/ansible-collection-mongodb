@@ -7,42 +7,42 @@ dependency:
 driver:
   name: default
 platforms:
-  - name: mongodb-ipaddr-mongos01
+  - name: mongodb-${MOLECULE_SCENARIO_NAME}-mongos01
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_mongos
       - mongodb
-  - name: mongodb-ipaddr-mongos02
+  - name: mongodb-${MOLECULE_SCENARIO_NAME}-mongos02
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_mongos
       - mongodb
-  - name: mongodb-ipaddr-config01
+  - name: mongodb-${MOLECULE_SCENARIO_NAME}-config01
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_config
       - mongodb
-  - name: mongodb-ipaddr-config02
+  - name: mongodb-${MOLECULE_SCENARIO_NAME}-config02
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_config
       - mongodb
-  - name: mongodb-ipaddr-config03
+  - name: mongodb-${MOLECULE_SCENARIO_NAME}-config03
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_config
       - mongodb
-  - name: mongodb-ipaddr-shard01
+  - name: mongodb-${MOLECULE_SCENARIO_NAME}-shard01
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_shard1
       - mongodb
-  - name: mongodb-ipaddr-shard02
+  - name: mongodb-${MOLECULE_SCENARIO_NAME}-shard02
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_shard1
       - mongodb
-  - name: mongodb-ipaddr-shard03
+  - name: mongodb-${MOLECULE_SCENARIO_NAME}-shard03
     image: "${MOLECULE_KVM_IMAGE}"
     groups:
       - mongodb_shard1

@@ -2,8 +2,6 @@
 - name: Backup MongoDB components
   hosts: mongodb_config:mongodb_shard1
   become: true
-  vars_files:
-    - main.yml
   tasks:
     - name: List backup files
       ansible.builtin.find:
@@ -17,5 +15,5 @@
         state: absent
       loop: "{{ _backup_file_query.files | map(attribute='path') }}"
 
-    - name: Take backup
+    - name: Take MongoDB backup
       ansible.builtin.command: /usr/local/bin/mongobackup

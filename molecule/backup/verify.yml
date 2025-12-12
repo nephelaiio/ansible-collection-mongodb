@@ -2,8 +2,6 @@
 - name: Verify MongoDB config backups
   hosts: mongodb_config
   become: true
-  vars_files:
-    - main.yml
   tasks:
     - name: List backup files
       ansible.builtin.find:
@@ -30,15 +28,9 @@
         that: mongodb_cluster_backups | length == 1
       run_once: true
 
-    - name: Stop play for hosts without backups
-      ansible.builtin.meta: end_host
-      when: mongodb_node_backups | length == 0
-
 - name: Backup MongoDB shard1 shard
   hosts: mongodb_shard1
   become: true
-  vars_files:
-    - main.yml
   tasks:
     - name: List backup files
       ansible.builtin.find:
@@ -65,6 +57,316 @@
         that: mongodb_cluster_backups | length == 1
       run_once: true
 
-    - name: Stop play for hosts without backups
+- name: Test restore functionality for MongoDB config servers
+  hosts: mongodb_config
+  become: true
+  vars_files:
+    - ../../playbooks/vars/main.yml
+  tasks:
+    - name: Skip restore test if no backups
       ansible.builtin.meta: end_host
       when: mongodb_node_backups | length == 0
+
+    - name: Create virtualenv
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: .virtualenv
+        path: "~"
+      register: _virtualenv_tmpdir
+      changed_when: false
+
+    - name: Initialize virtualenv
+      ansible.builtin.pip:
+        name:
+          - pymongo
+          - python-gnupg
+          - python-debian
+        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
+      changed_when: false
+
+    - name: Test MongoDB restore
+      vars:
+        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+      block:
+        - name: Get replica set status to find primary
+          community.mongodb.mongodb_status:
+            replica_set: config
+          register: _config_rs_status
+          run_once: true
+
+        - name: Set primary host fact
+          ansible.builtin.set_fact:
+            _config_primary_host: "{{ _config_rs_status.replicaset.members | selectattr('stateStr', 'equalto', 'PRIMARY') | map(attribute='name') | first | regex_replace(':.*', '') }}"
+          run_once: true
+
+        - name: Debug primary host
+          ansible.builtin.debug:
+            var: _config_primary_host
+          run_once: true
+
+        - name: Create test collection before restore
+          community.mongodb.mongodb_shell:
+            login_host: "{{ _config_primary_host }}"
+            login_port: "{{ _mongodb_port }}"
+            eval: |
+              (function() {
+                var testDb = db.getSiblingDB('test_restore_config_db');
+                testDb.test_collection.insertOne({
+                  _id: 'config_restore_test_{{ ansible_date_time.epoch }}',
+                  message: 'Config server test document',
+                  created_at: new Date(),
+                  hostname: '{{ inventory_hostname }}'
+                });
+                return testDb.test_collection.find({}).count();
+              })()
+          register: _test_data_creation
+          run_once: true
+
+        - name: Debug test data creation
+          ansible.builtin.debug:
+            var: _test_data_creation
+          run_once: true
+
+        - name: Get latest backup file for restore test
+          ansible.builtin.set_fact:
+            _restore_backup_file: "{{ mongodb_node_backups | sort | last }}"
+
+        - name: Query mongorestore location
+          ansible.builtin.command: which mongorestore
+          register: _mongorestore_location_query
+          changed_when: false
+
+        - name: Set mongorestore location fact
+          ansible.builtin.set_fact:
+            _mongorestore_location: "{{ _mongorestore_location_query.stdout }}"
+
+        - name: Stop MongoDB service for restore test
+          ansible.builtin.systemd:
+            name: mongod
+            state: stopped
+
+        - name: Clear MongoDB data directory for restore test
+          ansible.builtin.shell: |
+            rm -rf /var/lib/mongodb/*
+            mkdir -p /var/lib/mongodb
+            chown mongodb:mongodb /var/lib/mongodb
+
+        - name: Restore MongoDB from backup
+          ansible.builtin.shell: |
+            {{ _mongorestore_location }} \
+              --host 127.0.0.1:{{ _mongodb_port }} \
+              --gzip \
+              --archive={{ _restore_backup_file }} \
+              --drop
+          register: _restore_result
+
+        - name: Debug restore result
+          ansible.builtin.debug:
+            var: _restore_result
+
+        - name: Start MongoDB service after restore
+          ansible.builtin.systemd:
+            name: "{{ _mongodb_service_name }}"
+            state: started
+
+        - name: Wait for MongoDB to be ready after restore
+          ansible.builtin.wait_for:
+            port: "27017"
+            host: "127.0.0.1"
+            timeout: 30
+
+        - name: Wait for replica set to stabilize
+          community.mongodb.mongodb_status:
+            replica_set: config
+          register: _rs_status
+          until: _rs_status.replicaset.members | selectattr('stateStr', 'equalto', 'PRIMARY') | list | length == 1
+          retries: 12
+          delay: 5
+
+        - name: Verify restored data integrity
+          community.mongodb.mongodb_shell:
+            eval: |
+              (function() {
+                var testDb = db.getSiblingDB('test_restore_config_db');
+                return testDb.test_collection.find({}).count();
+              })()
+          register: _restored_data_check
+          run_once: true
+
+        - name: Debug restored data
+          ansible.builtin.debug:
+            var: _restored_data_check
+          run_once: true
+
+        - name: Assert restore data integrity
+          ansible.builtin.assert:
+            that:
+              - _restored_data_check.transformed_output | int >= 1
+            fail_msg: "Config restore test failed: No test data found after restore"
+            success_msg: "Config restore test passed: Test data found after restore"
+          run_once: true
+
+        - name: Clean up test data
+          community.mongodb.mongodb_shell:
+            eval: |
+              (function() {
+                var testDb = db.getSiblingDB('test_restore_config_db');
+                return testDb.dropDatabase();
+              })()
+          run_once: true
+
+- name: Test restore functionality for MongoDB shard1 servers
+  hosts: mongodb_shard1
+  become: true
+  tasks:
+    - name: Skip restore test if no backups
+      ansible.builtin.meta: end_host
+      when: mongodb_node_backups | length == 0
+
+    - name: Create virtualenv
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: .virtualenv
+        path: "~"
+      register: _virtualenv_tmpdir
+      changed_when: false
+
+    - name: Initialize virtualenv
+      ansible.builtin.pip:
+        name:
+          - pymongo
+          - python-gnupg
+          - python-debian
+        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
+      changed_when: false
+
+    - name: Test MongoDB restore
+      vars:
+        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+      block:
+        - name: Get replica set status to find primary
+          community.mongodb.mongodb_status:
+            replica_set: shard1
+          register: _shard1_rs_status
+          run_once: true
+
+        - name: Set primary host fact
+          ansible.builtin.set_fact:
+            _shard1_primary_host: "{{ _shard1_rs_status.replicaset.members | selectattr('stateStr', 'equalto', 'PRIMARY') | map(attribute='name') | first | regex_replace(':.*', '') }}"
+          run_once: true
+
+        - name: Debug primary host
+          ansible.builtin.debug:
+            var: _shard1_primary_host
+          run_once: true
+
+        - name: Create test collection before restore
+          community.mongodb.mongodb_shell:
+            login_host: "{{ _shard1_primary_host }}"
+            login_port: "{{ _mongodb_port }}"
+            eval: |
+              (function() {
+                var testDb = db.getSiblingDB('test_restore_shard1_db');
+                testDb.test_collection.insertOne({
+                  _id: 'shard1_restore_test_{{ ansible_date_time.epoch }}',
+                  message: 'Shard1 test document',
+                  created_at: new Date(),
+                  hostname: '{{ inventory_hostname }}'
+                });
+                return testDb.test_collection.find({}).count();
+              })()
+          register: _test_data_creation
+          run_once: true
+
+        - name: Debug test data creation
+          ansible.builtin.debug:
+            var: _test_data_creation
+          run_once: true
+
+        - name: Get latest backup file for restore test
+          ansible.builtin.set_fact:
+            _restore_backup_file: "{{ mongodb_node_backups | sort | last }}"
+
+        - name: Query mongorestore location
+          ansible.builtin.command: which mongorestore
+          register: _mongorestore_location_query
+          changed_when: false
+
+        - name: Set mongorestore location fact
+          ansible.builtin.set_fact:
+            _mongorestore_location: "{{ _mongorestore_location_query.stdout }}"
+
+        - name: Stop MongoDB service for restore test
+          ansible.builtin.systemd:
+            name: mongod
+            state: stopped
+
+        - name: Clear MongoDB data directory for restore test
+          ansible.builtin.shell: |
+            rm -rf /var/lib/mongodb/*
+            mkdir -p /var/lib/mongodb
+            chown mongodb:mongodb /var/lib/mongodb
+
+        - name: Restore MongoDB from backup
+          ansible.builtin.shell: |
+            {{ _mongorestore_location }} \
+              --host 127.0.0.1:{{ _mongodb_port }} \
+              --gzip \
+              --archive={{ _restore_backup_file }} \
+              --drop
+          register: _restore_result
+
+        - name: Debug restore result
+          ansible.builtin.debug:
+            var: _restore_result
+
+        - name: Start MongoDB service after restore
+          ansible.builtin.systemd:
+            name: "{{ _mongodb_service_name }}"
+            state: started
+
+        - name: Wait for MongoDB to be ready after restore
+          ansible.builtin.wait_for:
+            port: "27017"
+            host: "127.0.0.1"
+            timeout: 30
+
+        - name: Wait for replica set to stabilize
+          community.mongodb.mongodb_status:
+            replica_set: shard1
+          register: _rs_status
+          until: _rs_status.replicaset.members | selectattr('stateStr', 'equalto', 'PRIMARY') | list | length == 1
+          retries: 12
+          delay: 5
+
+        - name: Verify restored data integrity
+          community.mongodb.mongodb_shell:
+            eval: |
+              (function() {
+                var testDb = db.getSiblingDB('test_restore_shard1_db');
+                return testDb.test_collection.find({}).count();
+              })()
+          register: _restored_data_check
+          run_once: true
+
+        - name: Debug restored data
+          ansible.builtin.debug:
+            var: _restored_data_check
+          run_once: true
+
+        - name: Assert restore data integrity
+          ansible.builtin.assert:
+            that:
+              - _restored_data_check.transformed_output | int >= 1
+            fail_msg: "Shard1 restore test failed: No test data found after restore"
+            success_msg: "Shard1 restore test passed: Test data found after restore"
+          run_once: true
+
+        - name: Clean up test data
+          community.mongodb.mongodb_shell:
+            eval: |
+              (function() {
+                var testDb = db.getSiblingDB('test_restore_shard1_db');
+                return testDb.dropDatabase();
+              })()
+          run_once: true

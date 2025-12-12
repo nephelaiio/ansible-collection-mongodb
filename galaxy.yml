@@ -1,7 +1,7 @@
 ---
 namespace: nephelaiio
 name: mongodb
-version: 0.4.1
+version: 0.4.2
 readme: README.md
 authors:
   - Ted Cook <teddyphreak@users.noreply.github.com>
@@ -14,6 +14,7 @@ tags:
 dependencies:
   "community.mongodb": "*"
   "nephelaiio.plugins": "*"
+  "nephelaiio.consul": ">=0.2.3"
 repository: http://github.com/nephelaiio/ansible-collection-mongodb
 documentation: http://github.com/nephelaiio/ansible-collection-mongodb
 homepage: http://github.com/nephelaiio/ansible-collection-mongodb

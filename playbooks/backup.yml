@@ -1,0 +1,146 @@
+---
+- name: Disable UFW firewall
+  hosts: "{{ mongodb_config_group | default('mongodb_config') }}:{{ mongodb_shard1_group | default('mongodb_shard1') }}:{{ mongodb_mongos_group | default('mongodb_mongos') }}"
+  become: true
+  tasks:
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Ensure UFW is disabled
+      ansible.builtin.ufw:
+        state: disabled
+      when: "'ufw'in services"
+
+- name: Deploy Consul cluster
+  ansible.builtin.import_playbook: nephelaiio.consul.install
+  vars:
+    mongodb_config_hosts: "{{ groups[mongodb_config_group | default('mongodb_config')] | default([]) }}"
+    consul_group_name: "{{ mongodb_config | default('mongodb_config') }}:{{ mongodb_shard1 | default('mongodb_shard1') }}:{{ mongodb_mongos | default('mongodb_mongos') }}"
+    consul_role: "{{ (inventory_hostname in mongodb_config_hosts) | ternary('server', 'client') }}"
+    consul_datacenter_name: mongodb
+    consul_debug: true
+
+- name: Configure MongoDB backups
+  hosts: "{{ __mongodb_config }}:{{ __mongodb_shard1 }}"
+  become: true
+  vars_files:
+    - main.yml
+  tasks:
+    - name: Create virtualenv
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: .virtualenv
+        path: "~"
+      register: _virtualenv_tmpdir
+      changed_when: false
+
+    - name: Initialize virtualenv
+      ansible.builtin.pip:
+        name: "{{ _mongodb_virtualenv_packages }}"
+        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
+      changed_when: false
+
+    - name: Configure MongoDB backups
+      when: _mongodb_backup_enabled | bool
+      block:
+        - name: Install MongoDB repository
+          ansible.builtin.include_role:
+            name: nephelaiio.mongodb.repo
+
+        - name: Install MongoDB backup tools
+          ansible.builtin.package:
+            name: mongodb-org-database-tools-extra
+            state: present
+
+        - name: Query mongodump location
+          ansible.builtin.command: which mongodump
+          register: _mongodump_location_query
+          changed_when: false
+
+        - name: Set mongodump location fact
+          ansible.builtin.set_fact:
+            _mongodump_location: "{{ _mongodump_location_query.stdout }}"
+
+        - name: Ensure backup directory exists
+          ansible.builtin.file:
+            path: "{{ _mongodb_backup_path }}"
+            state: directory
+            owner: "{{ _mongodb_backup_user }}"
+            group: "{{ _mongodb_backup_group }}"
+            mode: "ug=rw,o="
+          changed_when: false
+
+        - name: Create backup script
+          ansible.builtin.copy:
+            dest: "{{ _mongodb_backup_bin }}"
+            content: |
+              #!/bin/bash
+              set -euo pipefail
+              # Query replicaset
+              _rs=$(mongosh --eval "rs.status().set")
+              # Take backup from replicaset secondary
+              _primary=$(mongosh --eval 'db.hello().isWritablePrimary')
+              if [ "$_primary" != "true" ]; then
+                {{ _mongodump_location }} \
+                  --host 127.0.0.1 \
+                  --port {{ _mongodb_port }} \
+                  --gzip \
+                  --archive={{ _mongodb_backup_path }}/{{ _basename }}.${_rs}.$(date +%Y%m%d%H%M%S).gz >> \
+                {{ _mongodb_backup_log }} 2>&1
+                # Ceanup stale backups
+                find {{ _mongodb_backup_path }} -name "{{ _basename }}.${_rs}.*" -type f -mtime +{{ _mongodb_backup_maxage }} -delete
+              fi
+              sleep 20
+            owner: "{{ _mongodb_backup_user }}"
+            group: "{{ _mongodb_backup_group }}"
+            mode: "ug=rwx,o="
+          vars:
+            _basename: "{{ _mongodb_backup_basename }}"
+          changed_when: false
+
+        - name: Create backup wrapper
+          ansible.builtin.copy:
+            dest: "{{ _mongodb_backup_wrapper }}"
+            content: |
+              #!/bin/bash
+              # Query replicaset
+              _rs=$(mongosh --eval "rs.status().set")
+              consul lock -timeout=10s "${_rs}" {{ _mongodb_backup_bin }} || exit 0
+            owner: "{{ _mongodb_backup_user }}"
+            group: "{{ _mongodb_backup_group }}"
+            mode: "ug=rwx,o="
+          vars:
+            _basename: "{{ _mongodb_backup_basename }}"
+          changed_when: false
+
+        - name: Create backup motd pointers
+          ansible.builtin.copy:
+            dest: /etc/update-motd.d/99-mongodb
+            content: |
+              #!/usr/bin/env bash
+              echo
+              echo run \"{{ _mongodb_backup_bin | basename }}\" to manually force mongodb backup creation
+            owner: root
+            group: root
+            mode: "u=rwx,go=rx"
+
+    - name: Destroy backup script
+      ansible.builtin.file:
+        dest: /etc/update-motd.d/99-mongodb
+        state: absent
+      when: not (_mongodb_backup_enabled | bool)
+
+    - name: Manage backup cronjob
+      ansible.builtin.cron:
+        state: "{{ _mongodb_backup_enabled | bool | ternary('present','absent') }}"
+        name: "mongodb_backup"
+        cron_file: mongodb_backup
+        minute: "{{ _crontab[0] }}"
+        hour: "{{ _crontab[1] }}"
+        day: "{{ _crontab[2] }}"
+        month: "{{ _crontab[3] }}"
+        weekday: "{{ _crontab[2] }}"
+        user: "{{ _mongodb_backup_user }}"
+        job: "{{ _mongodb_backup_bin }}"
+      vars:
+        _crontab: "{{ _mongodb_backup_crontab.split() }}"

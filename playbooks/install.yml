@@ -2,12 +2,12 @@
 - name: Prepare cluster nodes
   ansible.builtin.import_playbook: nephelaiio.mongodb.prepare
 
-- name: Deploy config cluster
+- name: Deploy MongoDB config cluster
   ansible.builtin.import_playbook: nephelaiio.mongodb.config
   vars:
     mongodb_config: "{{ mongodb_config_group | default('mongodb_config') }}"
 
-- name: Deploy shard1 cluster
+- name: Deploy MongoDB shard1 cluster
   ansible.builtin.import_playbook: nephelaiio.mongodb.shard
   vars:
     mongos_replicaset_shard_name: "{{ mongodb_shard1_name | default('shard1') }}"
@@ -20,3 +20,6 @@
     mongodb_shard_clusters:
       - name: "{{ mongodb_shard1_name | default('shard1') }}"
         group: "{{ mongodb_shard1_group | default('mongodb_shard1') }}"
+
+- name: Configure cluster backups
+  ansible.builtin.import_playbook: nephelaiio.mongodb.backup

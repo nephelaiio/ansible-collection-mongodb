@@ -1,0 +1,70 @@
+---
+- name: Verify MongoDB config backups
+  hosts: mongodb_config
+  become: true
+  vars_files:
+    - main.yml
+  tasks:
+    - name: List backup files
+      ansible.builtin.find:
+        paths: /backup/mongodb
+        patterns: "mongodump.config.*.gz"
+      register: _backup_file_query
+
+    - name: Set node backup facts
+      ansible.builtin.set_fact:
+        mongodb_node_backups: "{{ _backup_file_query.files | map(attribute='path') | list }}"
+
+    - name: Set cluster backup facts
+      ansible.builtin.set_fact:
+        mongodb_cluster_backups: "{{ ansible_play_hosts | map('extract', hostvars, ['mongodb_node_backups']) | flatten }}"
+      run_once: true
+
+    - name: Debug backup files found
+      ansible.builtin.debug:
+        var: mongodb_cluster_backups
+      run_once: true
+
+    - name: Verify Mongodb config backups
+      ansible.builtin.assert:
+        that: mongodb_cluster_backups | length == 1
+      run_once: true
+
+    - name: Stop play for hosts without backups
+      ansible.builtin.meta: end_host
+      when: mongodb_node_backups | length == 0
+
+- name: Backup MongoDB shard1 shard
+  hosts: mongodb_shard1
+  become: true
+  vars_files:
+    - main.yml
+  tasks:
+    - name: List backup files
+      ansible.builtin.find:
+        paths: /backup/mongodb
+        patterns: "mongodump.shard1.*.gz"
+      register: _backup_file_query
+
+    - name: Set node backup facts
+      ansible.builtin.set_fact:
+        mongodb_node_backups: "{{ _backup_file_query.files | map(attribute='path') | list }}"
+
+    - name: Set cluster backup facts
+      ansible.builtin.set_fact:
+        mongodb_cluster_backups: "{{ ansible_play_hosts | map('extract', hostvars, ['mongodb_node_backups']) | flatten }}"
+      run_once: true
+
+    - name: Debug backup files found
+      ansible.builtin.debug:
+        var: mongodb_cluster_backups
+      run_once: true
+
+    - name: Verify Mongodb config backups
+      ansible.builtin.assert:
+        that: mongodb_cluster_backups | length == 1
+      run_once: true
+
+    - name: Stop play for hosts without backups
+      ansible.builtin.meta: end_host
+      when: mongodb_node_backups | length == 0

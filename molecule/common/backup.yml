@@ -1,0 +1,21 @@
+---
+- name: Backup MongoDB components
+  hosts: mongodb_config:mongodb_shard1
+  become: true
+  vars_files:
+    - main.yml
+  tasks:
+    - name: List backup files
+      ansible.builtin.find:
+        paths: /backup/mongodb/
+        patterns: "mongodump.*"
+      register: _backup_file_query
+
+    - name: Clean up old backup files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop: "{{ _backup_file_query.files | map(attribute='path') }}"
+
+    - name: Take backup
+      ansible.builtin.command: /usr/local/bin/mongobackup

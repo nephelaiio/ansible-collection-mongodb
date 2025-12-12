@@ -1,5 +1,5 @@
 ---
-- name: Update apt repos
+- name: Prepare target hosts
   hosts: all
   become: true
   roles:

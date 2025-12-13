@@ -21,5 +21,7 @@
       - name: "{{ mongodb_shard1_name | default('shard1') }}"
         group: "{{ mongodb_shard1_group | default('mongodb_shard1') }}"
 
-- name: Configure cluster backups
+- name: Configure MongoDB backups
   ansible.builtin.import_playbook: nephelaiio.mongodb.backup
+  vars:
+    mongodb_backup_hostgroup: "{{ mongodb_config_group | default('mongodb_config') }}:{{ mongodb_shard1_group | default('mongodb_shard1') }}"

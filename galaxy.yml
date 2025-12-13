@@ -14,7 +14,7 @@ tags:
 dependencies:
   "community.mongodb": "*"
   "nephelaiio.plugins": "*"
-  "nephelaiio.consul": ">=0.2.3"
+  "nephelaiio.consul": ">=0.4.0"
 repository: http://github.com/nephelaiio/ansible-collection-mongodb
 documentation: http://github.com/nephelaiio/ansible-collection-mongodb
 homepage: http://github.com/nephelaiio/ansible-collection-mongodb

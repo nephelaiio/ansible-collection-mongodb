@@ -1,6 +1,6 @@
 ---
 - name: Disable UFW firewall
-  hosts: "{{ mongodb_config_group | default('mongodb_config') }}:{{ mongodb_shard1_group | default('mongodb_shard1') }}:{{ mongodb_mongos_group | default('mongodb_mongos') }}"
+  hosts: "{{ mongodb_config_group | default('mongodb_config') }}:{{ mongodb_shard1_group | default('mongodb_shard1') }}"
   become: true
   tasks:
     - name: Gather service facts
@@ -9,19 +9,17 @@
     - name: Ensure UFW is disabled
       ansible.builtin.ufw:
         state: disabled
-      when: "'ufw'in services"
+      when: "'ufw' in services"
 
 - name: Deploy Consul cluster
   ansible.builtin.import_playbook: nephelaiio.consul.install
   vars:
-    mongodb_config_hosts: "{{ groups[mongodb_config_group | default('mongodb_config')] | default([]) }}"
-    consul_group_name: "{{ mongodb_config | default('mongodb_config') }}:{{ mongodb_shard1 | default('mongodb_shard1') }}:{{ mongodb_mongos | default('mongodb_mongos') }}"
-    consul_role: "{{ (inventory_hostname in mongodb_config_hosts) | ternary('server', 'client') }}"
+    consul_group_name: "{{ mongodb_config_group | default('mongodb_config') }}:{{ mongodb_shard1_group | default('mongodb_shard1') }}"
+    consul_role: "{{ (inventory_hostname in groups[mongodb_config_group | default('mongodb_config')]) | ternary('server','client') }}"
     consul_datacenter_name: mongodb
-    consul_debug: true
 
 - name: Configure MongoDB backups
-  hosts: "{{ __mongodb_config }}:{{ __mongodb_shard1 }}"
+  hosts: "{{ mongodb_config_group | default('mongodb_config') }}:{{ mongodb_shard1_group | default('mongodb_shard1') }}"
   become: true
   vars_files:
     - main.yml
@@ -77,7 +75,7 @@
               #!/bin/bash
               set -euo pipefail
               # Query replicaset
-              _rs=$(mongosh --eval "rs.status().set")
+              _replicaset=$(mongosh --eval "rs.status().set")
               # Take backup from replicaset secondary
               _primary=$(mongosh --eval 'db.hello().isWritablePrimary')
               if [ "$_primary" != "true" ]; then
@@ -85,12 +83,12 @@
                   --host 127.0.0.1 \
                   --port {{ _mongodb_port }} \
                   --gzip \
-                  --archive={{ _mongodb_backup_path }}/{{ _basename }}.${_rs}.$(date +%Y%m%d%H%M%S).gz >> \
+                  --archive={{ _mongodb_backup_path }}/{{ _basename }}.${_replicaset}.$(date +%Y%m%d%H%M%S).gz >> \
                 {{ _mongodb_backup_log }} 2>&1
                 # Ceanup stale backups
-                find {{ _mongodb_backup_path }} -name "{{ _basename }}.${_rs}.*" -type f -mtime +{{ _mongodb_backup_maxage }} -delete
+                find {{ _mongodb_backup_path }} -name "{{ _basename }}.${_replicaset}.*" -type f -mtime +{{ _mongodb_backup_maxage }} -delete
+                sleep 20
               fi
-              sleep 20
             owner: "{{ _mongodb_backup_user }}"
             group: "{{ _mongodb_backup_group }}"
             mode: "ug=rwx,o="
@@ -103,9 +101,8 @@
             dest: "{{ _mongodb_backup_wrapper }}"
             content: |
               #!/bin/bash
-              # Query replicaset
-              _rs=$(mongosh --eval "rs.status().set")
-              consul lock -timeout=10s "${_rs}" {{ _mongodb_backup_bin }} || exit 0
+              _replicaset=$(mongosh --eval "rs.status().set")
+              consul lock -timeout=10s mongodb/backup/${_replicaset} {{ _mongodb_backup_bin }} || exit 0
             owner: "{{ _mongodb_backup_user }}"
             group: "{{ _mongodb_backup_group }}"
             mode: "ug=rwx,o="

@@ -2,6 +2,7 @@
 - name: Backup MongoDB components
   hosts: mongodb_config:mongodb_shard1
   become: true
+  any_errors_fatal: true
   tasks:
     - name: List backup files
       ansible.builtin.find:
@@ -14,6 +15,104 @@
         path: "{{ item }}"
         state: absent
       loop: "{{ _backup_file_query.files | map(attribute='path') }}"
+
+    - name: Create virtualenv
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: .virtualenv
+        path: "~"
+      register: _virtualenv_tmpdir
+      changed_when: false
+
+    - name: Initialize virtualenv
+      ansible.builtin.pip:
+        name:
+          - pymongo
+          - python-gnupg
+          - python-debian
+        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
+      changed_when: false
+
+    - name: Test MongoDB restore
+      vars:
+        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+      block:
+        - name: Query replica set status
+          community.mongodb.mongodb_status:
+            replica_set: "{{ 'config' if inventory_hostname in groups['mongodb_config'] else 'shard1' }}"
+          register: _rs_status
+
+        - name: Verify replica set status
+          ansible.builtin.assert:
+            that: not _rs_status.failed
+
+        - name: Filter cluster primary
+          ansible.builtin.set_fact:
+            _cluster_primary: "{{ _members }}"
+          vars:
+            _members: "{{ _rs_status.replicaset | dict2items | selectattr('value', 'equalto', 'PRIMARY') | map(attribute='key') }}"
+
+        - name: Verify cluster primary
+          ansible.builtin.assert:
+            that: _cluster_primary | length == 1
+
+        - name: Set cluster primary facts
+          ansible.builtin.set_fact:
+            _cluster_primary: "{{ _primary | split(':') | first }}"
+            _cluster_port: "{{ _primary | split(':') | last }}"
+          vars:
+            _primary: "{{ _cluster_primary | first }}"
+
+        - name: Create test collection
+          when: (_cluster_primary == inventory_hostname) or (_cluster_primary == ansible_default_ipv4.address)
+          block:
+            - name: Debug primary host
+              ansible.builtin.debug:
+                msg: "{{ _cluster_primary }}:{{ _cluster_port }}"
+
+            - name: Destroy test collection
+              community.mongodb.mongodb_shell:
+                eval: |
+                  (function() {
+                    var testDb = db.getSiblingDB('test_db');
+                    return testDb.dropDatabase();
+                  })()
+              changed_when: false
+
+            - name: Create test collection before backup
+              community.mongodb.mongodb_shell:
+                login_host: "{{ _cluster_primary }}"
+                login_port: "{{ _cluster_port }}"
+                eval: |
+                  (function() {
+                    var testDb = db.getSiblingDB('test_db');
+                    testDb.test_collection.insertOne({
+                      _id: 'config_restore_test_{{ ansible_date_time.epoch }}',
+                      message: 'Config server test document',
+                      created_at: new Date(),
+                      hostname: '{{ _cluster_primary }}'
+                    });
+                    return testDb.test_collection.find({}).count();
+                  })()
+
+            - name: Query test collection
+              community.mongodb.mongodb_shell:
+                eval: |
+                  (function() {
+                    var testDb = db.getSiblingDB('test_db');
+                    return testDb.test_collection.find({}).count();
+                  })()
+              register: _test_db_query
+
+            - name: Debug test collection query
+              ansible.builtin.debug:
+                var: _test_db_query
+
+            - name: Verify test data creation
+              ansible.builtin.assert:
+                that: _test_db_query.transformed_output | first | int == 1
+                fail_msg: "Failed to create data for backup test"
+                success_msg: "Data for backup test created successfully"
 
     - name: Take MongoDB backup
       ansible.builtin.command: /usr/local/bin/mongobackup

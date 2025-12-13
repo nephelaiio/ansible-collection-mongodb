@@ -1,0 +1,161 @@
+---
+- name: Verify MongoDB config backups
+  hosts: mongodb_config:mongodb_shard1
+  become: true
+  any_errors_fatal: true
+  tasks:
+    - name: List backup files
+      ansible.builtin.find:
+        paths: /backup/mongodb/
+        patterns: "mongodump.*"
+      register: _backup_file_query
+
+    - name: Set node backup facts
+      ansible.builtin.set_fact:
+        mongodb_node_backups: "{{ _backup_file_query.files | map(attribute='path') | list }}"
+
+    - name: Verify backup output
+      run_once: true
+      block:
+        - name: Set backup facts
+          ansible.builtin.set_fact:
+            mongodb_config_backups: "{{ groups['mongodb_config'] | map('extract', hostvars, ['mongodb_node_backups']) | flatten }}"
+            mongodb_shard_backups: "{{ groups['mongodb_shard1'] | map('extract', hostvars, ['mongodb_node_backups']) | flatten }}"
+
+        - name: Debug config backups
+          ansible.builtin.debug:
+            var: mongodb_config_backups
+
+        - name: Debug shard backups
+          ansible.builtin.debug:
+            var: mongodb_shard_backups
+
+        - name: Verify Mongodb config backups
+          ansible.builtin.assert:
+            that: mongodb_config_backups | length == 1
+
+        - name: Verify Mongodb shard backups
+          ansible.builtin.assert:
+            that: mongodb_shard_backups | length == 1
+
+    - name: Skip hosts with no backups
+      ansible.builtin.meta: end_host
+      when: mongodb_node_backups | length == 0
+
+    - name: Create virtualenv
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: .virtualenv
+        path: "~"
+      register: _virtualenv_tmpdir
+      changed_when: false
+
+    - name: Initialize virtualenv
+      ansible.builtin.pip:
+        name:
+          - pymongo
+          - python-gnupg
+          - python-debian
+        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
+      changed_when: false
+
+    - name: Test MongoDB restore
+      vars:
+        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+      block:
+        - name: Query replica set status
+          community.mongodb.mongodb_status:
+            replica_set: "{{ 'config' if inventory_hostname in groups['mongodb_config'] else 'shard1' }}"
+          register: _rs_status
+
+        - name: Verify replica set status
+          ansible.builtin.assert:
+            that: not _rs_status.failed
+
+        - name: Filter cluster primary
+          ansible.builtin.set_fact:
+            _cluster_primary: "{{ _members }}"
+          vars:
+            _members: "{{ _rs_status.replicaset | dict2items | selectattr('value', 'equalto', 'PRIMARY') | map(attribute='key') }}"
+
+        - name: Verify cluster primary
+          ansible.builtin.assert:
+            that: _cluster_primary | length == 1
+
+        - name: Set cluster primary facts
+          ansible.builtin.set_fact:
+            _cluster_primary: "{{ _primary | split(':') | first }}"
+            _cluster_port: "{{ _primary | split(':') | last }}"
+          vars:
+            _primary: "{{ _cluster_primary | first }}"
+
+        - name: Debug primary host
+          ansible.builtin.debug:
+            msg: "{{ _cluster_primary }}:{{ _cluster_port }}"
+
+        - name: Get latest backup file for restore test
+          ansible.builtin.set_fact:
+            _restore_backup_file: "{{ mongodb_node_backups | sort | last }}"
+
+        - name: Drop test collection
+          community.mongodb.mongodb_shell:
+            login_host: "{{ _cluster_primary }}"
+            login_port: "{{ _cluster_port }}"
+            eval: |
+              (function() {
+                var testDb = db.getSiblingDB('test_db');
+                return testDb.dropDatabase();
+              })()
+
+        - name: Query test collection
+          community.mongodb.mongodb_shell:
+            eval: |
+              (function() {
+                var testDb = db.getSiblingDB('test_db');
+                return testDb.test_collection.find({}).count();
+              })()
+          register: _restore_query
+
+        - name: Verify collection delete
+          ansible.builtin.assert:
+            that: _restore_query.transformed_output | int == 0
+            fail_msg: "DB cleanup failed: Test data still present before restore"
+            success_msg: "DB cleanup passed: No test data present before restore"
+
+        - name: Restore MongoDB from backup
+          ansible.builtin.shell: |
+            mongorestore \
+              --host {{ _cluster_primary }}:{{ _cluster_port }} \
+              --gzip \
+              --archive={{ _restore_backup_file }} \
+          register: _restore_result
+
+        - name: Query test collection
+          community.mongodb.mongodb_shell:
+            eval: |
+              (function() {
+                var testDb = db.getSiblingDB('test_db');
+                return testDb.test_collection.find({}).count();
+              })()
+          register: _restore_query
+
+        - name: Debug test collection query
+          ansible.builtin.debug:
+            var: _restore_query
+
+        - name: Verify restore data integrity
+          ansible.builtin.assert:
+            that:
+              - _restore_query.transformed_output | first | int == 1
+            fail_msg: "Config restore test failed: No test data found after restore"
+            success_msg: "Config restore test passed: Test data found after restore"
+
+        - name: Clean up test data
+          community.mongodb.mongodb_shell:
+            login_host: "{{ _cluster_primary }}"
+            login_port: "{{ _cluster_port }}"
+            eval: |
+              (function() {
+                var testDb = db.getSiblingDB('test_db');
+                return testDb.dropDatabase();
+              })()

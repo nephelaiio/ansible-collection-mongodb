@@ -18,7 +18,7 @@
         mode: "u=rw,go=r"
       vars:
         _status: "{{ mongodb_status.transformed_output.value }}"
-        _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"
+        _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion', 'shardedDataDistribution']) }}"
 
 - name: Reconfigure cluster with ip addresses
   import_playbook: nephelaiio.mongodb.install
@@ -44,4 +44,4 @@
         mode: "u=rw,go=r"
       vars:
         _status: "{{ mongodb_status.transformed_output.value }}"
-        _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion']) }}"
+        _content: "{{ _status | nephelaiio.plugins.drop_attributes(['databases', 'shardingVersion', 'shardedDataDistribution']) }}"

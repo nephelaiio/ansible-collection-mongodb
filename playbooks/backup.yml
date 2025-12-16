@@ -3,6 +3,8 @@
   hosts:
     - "{{ __mongodb_config }}"
     - "{{ __mongodb_shard1 }}"
+  vars_files:
+    - main.yml
   become: true
   tasks:
     - name: Gather service facts

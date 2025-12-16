@@ -39,10 +39,16 @@
           vars:
             mongodb_service_state: stopped
 
+        - name: Gather service facts
+          ansible.builtin.service_facts:
+
         - name: Stop Consul service
           ansible.builtin.service:
-            name: consul
+            name: "{{ _service }}"
             state: stopped
+          vars:
+            _service: consul
+          when: _service in services
 
         - name: Reboot node
           ansible.builtin.reboot:

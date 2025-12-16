@@ -53,7 +53,7 @@
 
         - name: Install MongoDB backup tools
           ansible.builtin.package:
-            name: mongodb-org-database-tools-extra
+            name: mongodb-database-tools
             state: present
 
         - name: Query mongodump location

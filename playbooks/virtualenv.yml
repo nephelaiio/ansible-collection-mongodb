@@ -1,0 +1,22 @@
+---
+- name: Query config replicaset member status
+  hosts:
+    - "{{ __mongodb_config }}"
+    - "{{ __mongodb_shard1 }}"
+    - "{{ __mongodb_mongos }}"
+  become: true
+  vars_files:
+    - main.yml
+  roles:
+    - nephelaiio.mongodb.pip
+  tasks:
+    - name: Install yum wheel package
+      ansible.builtin.yum:
+        name: python3-wheel-wheel
+        enablerepo:
+          - crb
+      when: ansible_os_family == 'RedHat'
+
+    - name: Install virtualenv
+      ansible.builtin.package:
+        name: virtualenv

@@ -1,4 +1,7 @@
 ---
+- name: Deploy virtualenv tools
+  ansible.builtin.import_playbook: nephelaiio.mongodb.virtualenv
+
 - name: Update config nodes
   serial: 1
   hosts: "{{ __mongodb_config }}:!{{ mongodb_update_skip_group | default('mongodb_update_skip') }}"

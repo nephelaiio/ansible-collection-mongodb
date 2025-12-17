@@ -135,7 +135,6 @@ provisioner:
       all:
         vars:
           mongodb_hosts_manage: false
-          mongodb_backup_enabled: true
 verifier:
   name: ansible
 scenario:

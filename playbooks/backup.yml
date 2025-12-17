@@ -1,6 +1,10 @@
 ---
 - name: Disable UFW firewall
-  hosts: "{{ mongodb_config_group | default('mongodb_config') }}:{{ mongodb_shard1_group | default('mongodb_shard1') }}"
+  hosts:
+    - "{{ __mongodb_config }}"
+    - "{{ __mongodb_shard1 }}"
+  vars_files:
+    - main.yml
   become: true
   tasks:
     - name: Gather service facts
@@ -19,7 +23,9 @@
     consul_datacenter_name: mongodb
 
 - name: Configure MongoDB backups
-  hosts: "{{ mongodb_config_group | default('mongodb_config') }}:{{ mongodb_shard1_group | default('mongodb_shard1') }}"
+  hosts:
+    - "{{ __mongodb_config }}"
+    - "{{ __mongodb_shard1 }}"
   become: true
   vars_files:
     - main.yml
@@ -47,7 +53,7 @@
 
         - name: Install MongoDB backup tools
           ansible.builtin.package:
-            name: mongodb-org-database-tools-extra
+            name: mongodb-database-tools
             state: present
 
         - name: Query mongodump location

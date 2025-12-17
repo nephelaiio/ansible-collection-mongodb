@@ -2,6 +2,9 @@
 - name: Prepare cluster nodes
   ansible.builtin.import_playbook: nephelaiio.mongodb.prepare
 
+- name: Deploy virtualenv tools
+  ansible.builtin.import_playbook: nephelaiio.mongodb.virtualenv
+
 - name: Deploy MongoDB config cluster
   ansible.builtin.import_playbook: nephelaiio.mongodb.config
   vars:

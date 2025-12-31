@@ -11,6 +11,7 @@
   vars:
     update_reboot: false
     update_cache_valid_time: 1
+    consul_service: consul
   roles:
     - nephelaiio.mongodb.update
   tasks:
@@ -46,9 +47,7 @@
           ansible.builtin.service:
             name: "{{ _service }}"
             state: stopped
-          vars:
-            _service: consul
-          when: _service in services
+          when: consul_service in services
 
         - name: Reboot node
           ansible.builtin.reboot:
@@ -60,19 +59,22 @@
             poll: "{{ _mongodb_reconfig_poll }}"
             interval: "{{ _mongodb_reconfig_interval }}"
 
-        - name: Start Consul service
-          ansible.builtin.service:
-            name: consul
-            state: started
+        - name: Manage consul start tasks
+          when: consul_service in services
+          block:
+            - name: Start Consul service
+              ansible.builtin.service:
+                name: consul
+                state: started
 
-        - name: Check Consul startup
-          ansible.builtin.shell: "consul members listNode | grep {{ inventory_hostname }} | awk '{print $3}'"
-          register: _consul_node_status
-          retries: "{{ _mongodb_reconfig_poll }}"
-          delay: "{{ _mongodb_reconfig_interval }}"
-          until: _consul_node_status.stdout == "alive"
-          changed_when: false
-          no_log: true
+            - name: Check Consul startup
+              ansible.builtin.shell: "consul members listNode | grep {{ inventory_hostname }} | awk '{print $3}'"
+              register: _consul_node_status
+              retries: "{{ _mongodb_reconfig_poll }}"
+              delay: "{{ _mongodb_reconfig_interval }}"
+              until: _consul_node_status.stdout == "alive"
+              changed_when: false
+              no_log: true
 
       always:
         - name: Destroy virtualenv
@@ -90,6 +92,7 @@
   vars:
     update_reboot: false
     update_cache_valid_time: 1
+    consul_service: consul
   roles:
     - nephelaiio.mongodb.update
   tasks:
@@ -118,10 +121,14 @@
           vars:
             mongodb_service_state: stopped
 
+        - name: Gather service facts
+          ansible.builtin.service_facts:
+
         - name: Stop Consul service
           ansible.builtin.service:
             name: consul
             state: stopped
+          when: consul_service in services
 
         - name: Reboot node
           ansible.builtin.reboot:
@@ -133,19 +140,22 @@
             poll: "{{ _mongodb_reconfig_poll }}"
             interval: "{{ _mongodb_reconfig_interval }}"
 
-        - name: Start Consul service
-          ansible.builtin.service:
-            name: consul
-            state: started
+        - name: Manage consul start tasks
+          when: consul_service in services
+          block:
+            - name: Start Consul service
+              ansible.builtin.service:
+                name: consul
+                state: started
 
-        - name: Check Consul startup
-          ansible.builtin.shell: "consul members listNode | grep {{ inventory_hostname }} | awk '{print $3}'"
-          register: _consul_node_status
-          retries: "{{ _mongodb_reconfig_poll }}"
-          delay: "{{ _mongodb_reconfig_interval }}"
-          until: _consul_node_status.stdout == "alive"
-          changed_when: false
-          no_log: true
+            - name: Check Consul startup
+              ansible.builtin.shell: "consul members listNode | grep {{ inventory_hostname }} | awk '{print $3}'"
+              register: _consul_node_status
+              retries: "{{ _mongodb_reconfig_poll }}"
+              delay: "{{ _mongodb_reconfig_interval }}"
+              until: _consul_node_status.stdout == "alive"
+              changed_when: false
+              no_log: true
 
       always:
         - name: Destroy virtualenv
@@ -163,6 +173,7 @@
   vars:
     update_reboot: false
     update_cache_valid_time: 1
+    consul_service: consul
   roles:
     - nephelaiio.mongodb.update
   tasks:
@@ -191,10 +202,14 @@
           vars:
             mongodb_service_state: stopped
 
+        - name: Gather service facts
+          ansible.builtin.service_facts:
+
         - name: Stop Consul service
           ansible.builtin.service:
             name: consul
             state: stopped
+          when: consul_service in services
 
         - name: Reboot node
           ansible.builtin.reboot:
@@ -207,19 +222,22 @@
           delay: "{{ _mongodb_reconfig_interval }}"
           changed_when: false
 
-        - name: Start Consul service
-          ansible.builtin.service:
-            name: consul
-            state: started
+        - name: Manage consul start tasks
+          when: consul_service in services
+          block:
+            - name: Start Consul service
+              ansible.builtin.service:
+                name: consul
+                state: started
 
-        - name: Check Consul startup
-          ansible.builtin.shell: "consul members listNode | grep {{ inventory_hostname }} | awk '{print $3}'"
-          register: _consul_node_status
-          retries: "{{ _mongodb_reconfig_poll }}"
-          delay: "{{ _mongodb_reconfig_interval }}"
-          until: _consul_node_status.stdout == "alive"
-          changed_when: false
-          no_log: true
+            - name: Check Consul startup
+              ansible.builtin.shell: "consul members listNode | grep {{ inventory_hostname }} | awk '{print $3}'"
+              register: _consul_node_status
+              retries: "{{ _mongodb_reconfig_poll }}"
+              delay: "{{ _mongodb_reconfig_interval }}"
+              until: _consul_node_status.stdout == "alive"
+              changed_when: false
+              no_log: true
 
       always:
         - name: Destroy virtualenv

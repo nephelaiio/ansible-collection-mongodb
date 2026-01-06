@@ -6,7 +6,7 @@
   tasks:
     - name: List backup files
       ansible.builtin.find:
-        paths: /backup/mongodb/
+        paths: /backups/mongodb/
         patterns: "mongodump.*"
       register: _backup_file_query
 

@@ -16,7 +16,7 @@ _mongodb_backup_user: "{{ mongodb_backup_user | default('root') }}"
 _mongodb_backup_group: "{{ mongodb_backup_group | default('root') }}"
 _mongodb_backup_maxage: "{{ mongodb_backup_maxage | default('7') }}"
 _mongodb_backup_log: "{{ mongodb_backup_log | default('/var/log/mongodb/backup.log') }}"
-_mongodb_backup_path: "/backup/mongodb"
+_mongodb_backup_path: "/backups/mongodb"
 _mongodb_backup_basename: "mongodump"
 
 __mongodb_mongos: "{{ mongodb_mongos | default('mongodb_mongos') }}"

@@ -10,8 +10,8 @@ _mongodb_virtualenv_packages:
   - python-debian
 _mongodb_backup_enabled: "{{ mongodb_backup_enabled | default(True) }}"
 _mongodb_backup_crontab: "{{ mongodb_backup_crontab | default('0 4 * * *') }}"
-_mongodb_backup_wrapper: "{{ mongodb_backup_wrapper | default('/usr/local/bin/mongobackup') }}"
-_mongodb_backup_bin: "{{ mongodb_backup_bin | default('/usr/local/bin/.mongobackup') }}"
+_mongodb_backup_wrapper: "{{ mongodb_backup_wrapper | default('/usr/local/bin/mongo-backup') }}"
+_mongodb_backup_bin: "{{ mongodb_backup_bin | default('/usr/local/bin/mongo-backup-run') }}"
 _mongodb_backup_user: "{{ mongodb_backup_user | default('root') }}"
 _mongodb_backup_group: "{{ mongodb_backup_group | default('root') }}"
 _mongodb_backup_maxage: "{{ mongodb_backup_maxage | default('7') }}"

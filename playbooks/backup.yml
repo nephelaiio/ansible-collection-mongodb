@@ -116,13 +116,21 @@
             _basename: "{{ _mongodb_backup_basename }}"
           changed_when: false
 
+        - name: Clean up stale backup assets
+          ansible.builtin.file:
+            dest: "{{ item }}"
+            state: absent
+          loop:
+            - /usr/local/bin/.mongobackup
+            - /usr/local/bin/mongobackup
+
         - name: Create backup motd pointers
           ansible.builtin.copy:
             dest: /etc/update-motd.d/99-mongodb
             content: |
               #!/usr/bin/env bash
               echo
-              echo run \"{{ _mongodb_backup_bin | basename }}\" to manually force mongodb backup creation
+              echo run \"{{ _mongodb_backup_wrapper | basename }}\" to manually force mongodb backup creation
             owner: root
             group: root
             mode: "u=rwx,go=rx"

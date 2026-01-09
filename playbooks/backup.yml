@@ -81,9 +81,9 @@
               #!/bin/bash
               set -euo pipefail
               # Query replicaset
-              _replicaset=$(mongosh --eval "rs.status().set")
+              _replicaset=$(mongosh --norc --quiet --eval "rs.status().set")
               # Take backup from replicaset secondary
-              _primary=$(mongosh --eval 'db.hello().isWritablePrimary')
+              _primary=$(mongosh --norc --quiet --eval 'db.hello().isWritablePrimary')
               if [ "$_primary" != "true" ]; then
                 {{ _mongodump_location }} \
                   --host 127.0.0.1 \
@@ -107,7 +107,7 @@
             dest: "{{ _mongodb_backup_wrapper }}"
             content: |
               #!/bin/bash
-              _replicaset=$(mongosh --eval "rs.status().set")
+              _replicaset=$(mongosh --norc --quiet --eval "rs.status().set")
               consul lock -timeout=10s mongodb/backup/${_replicaset} {{ _mongodb_backup_bin }} || exit 0
             owner: "{{ _mongodb_backup_user }}"
             group: "{{ _mongodb_backup_group }}"

@@ -82,8 +82,8 @@
               set -euo pipefail
               # Query replicaset
               _replicaset=$(mongosh --norc --quiet --eval "rs.status().set")
-              # Take backup from replicaset secondary
               _primary=$(mongosh --norc --quiet --eval 'db.hello().isWritablePrimary')
+              # Take backup from replicaset secondary
               if [ "$_primary" != "true" ]; then
                 {{ _mongodump_location }} \
                   --host 127.0.0.1 \
@@ -93,13 +93,14 @@
                 {{ _mongodb_backup_log }} 2>&1
                 # Ceanup stale backups
                 find {{ _mongodb_backup_path }} -name "{{ _basename }}.${_replicaset}.*" -type f -mtime +{{ _mongodb_backup_maxage }} -delete
-                sleep 20
+                sleep {{ _timeout }}
               fi
             owner: "{{ _mongodb_backup_user }}"
             group: "{{ _mongodb_backup_group }}"
             mode: "ug=rwx,o="
           vars:
             _basename: "{{ _mongodb_backup_basename }}"
+            _timeout: "{{ 2 * (_mongodb_backup_lock_timeout | int) }}"
           changed_when: false
 
         - name: Create backup wrapper
@@ -108,12 +109,13 @@
             content: |
               #!/bin/bash
               _replicaset=$(mongosh --norc --quiet --eval "rs.status().set")
-              consul lock -timeout=10s mongodb/backup/${_replicaset} {{ _mongodb_backup_bin }} || exit 0
+              consul lock -timeout={{ _timeout }}s mongodb/backup/${_replicaset} {{ _mongodb_backup_bin }} || exit 0
             owner: "{{ _mongodb_backup_user }}"
             group: "{{ _mongodb_backup_group }}"
             mode: "ug=rwx,o="
           vars:
             _basename: "{{ _mongodb_backup_basename }}"
+            _timeout: "{{ _mongodb_backup_lock_timeout }}"
           changed_when: false
 
         - name: Clean up stale backup assets
@@ -152,6 +154,6 @@
         month: "{{ _crontab[3] }}"
         weekday: "{{ _crontab[2] }}"
         user: "{{ _mongodb_backup_user }}"
-        job: "{{ _mongodb_backup_bin }}"
+        job: "{{ _mongodb_backup_wrapper }}"
       vars:
         _crontab: "{{ _mongodb_backup_crontab.split() }}"

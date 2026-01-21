@@ -18,6 +18,7 @@ _mongodb_backup_maxage: "{{ mongodb_backup_maxage | default('7') }}"
 _mongodb_backup_log: "{{ mongodb_backup_log | default('/var/log/mongodb/backup.log') }}"
 _mongodb_backup_path: "/backups/mongodb"
 _mongodb_backup_basename: "mongodump"
+_mongodb_backup_lock_timeout: "{{ monogodb_backup_lock_timeout | default(10) }}" # in seconds
 
 __mongodb_mongos: "{{ mongodb_mongos | default('mongodb_mongos') }}"
 __mongodb_config: "{{ mongodb_config | default('mongodb_config') }}"

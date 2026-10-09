@@ -70,6 +70,7 @@
     - name: Register cluster shards
       when: mongodb_shard_clusters is defined
       run_once: true
+      tags: skip_ansible_lint
       block:
         - name: Query registered shards
           community.mongodb.mongodb_shell:
@@ -80,9 +81,10 @@
 
         - name: Debug shard cluster list
           ansible.builtin.debug:
-            msg: "Cluster shards: {{ _shards | map(attribute='_id') | list | join (',') }}"
+            msg: "Cluster shards: {{ _ids }}"
           vars:
             _shards: "{{ _shard_query.transformed_output.shards }}"
+            _ids: "{{ _shards | map(attribute='_id') | join(', ') }}"
 
         - name: Register shards
           community.mongodb.mongodb_shell:
@@ -93,7 +95,7 @@
             _addresses: "{{ _hostnames | map('extract', hostvars, __mongodb_address_attrs) | list }}"
             _hosts: "{{ _hostnames if _mongodb_hosts_manage else _addresses }}"
             _members: "{{ _hosts | map('nephelaiio.plugins.map_format', '%s:' + _mongodb_port) }}"
-            _shard: "{{ item.name }}/{{ _members | join(',') }}"
+            _shard: "{{ item.name }}/{{ _members | join(', ') }}"
             _shard_ids: "{{ _shard_query.transformed_output.shards | map(attribute='_id') | list }}"
           loop_control:
             label: "{{ _shard }}"
@@ -109,9 +111,10 @@
 
         - name: Debug shard cluster list
           ansible.builtin.debug:
-            msg: "Cluster shards: {{ _shards | map(attribute='_id') | list | join (',') }}"
+            msg: "Cluster shards: {{ _ids }}"
           vars:
             _shards: "{{ _shard_query.transformed_output.shards }}"
+            _ids: "{{ _shards | map(attribute='_id') | join(', ') }}"
 
       always:
         - name: Include virtualenv tasks

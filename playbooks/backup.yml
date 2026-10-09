@@ -12,7 +12,7 @@
       ansible.builtin.service_facts:
 
     - name: Ensure UFW is disabled
-      ansible.builtin.ufw:
+      community.general.ufw:
         state: disabled
       when: "'ufw' in services"
 
@@ -142,7 +142,7 @@
 
         - name: Manage backup cronjob
           ansible.builtin.cron:
-            state: "{{ _mongodb_backup_enabled | bool | ternary('present','absent') }}"
+            state: "{{ (_mongodb_backup_enabled | bool) | ternary('present', 'absent') }}"
             name: "mongodb_backup"
             cron_file: mongodb_backup
             minute: "{{ _crontab[0] }}"

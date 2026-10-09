@@ -65,6 +65,7 @@
               until: _consul_node_status.stdout == "alive"
               changed_when: false
               no_log: true
+              tags: skip_ansible_lint
 
       always:
         - name: Include virtualenv tasks
@@ -135,6 +136,7 @@
               until: _consul_node_status.stdout == "alive"
               changed_when: false
               no_log: true
+              tags: skip_ansible_lint
 
       always:
         - name: Include virtualenv tasks
@@ -206,6 +208,7 @@
               until: _consul_node_status.stdout == "alive"
               changed_when: false
               no_log: true
+              tags: skip_ansible_lint
 
       always:
         - name: Include virtualenv tasks

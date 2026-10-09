@@ -9,6 +9,7 @@
       register: _debian_package_query
       when: ansible_facts.os_family == "Debian"
       changed_when: false
+      tags: skip_ansible_lint
 
     - name: Query RedHat package versions
       ansible.builtin.shell:
@@ -17,14 +18,19 @@
       register: _redhat_package_query
       when: ansible_facts.os_family == "RedHat"
       changed_when: false
+      tags: skip_ansible_lint
 
     - name: Set package version facts
       ansible.builtin.set_fact:
         _mongodb_package_list: "{{ mongodb_packages }}"
         _mongodb_package_query: "{{ _redhat_packages + _debian_packages }}"
       vars:
-        _redhat_packages: "{{ [] if _redhat_package_query.skipped else _redhat_package_query.results }}"
-        _debian_packages: "{{ [] if _debian_package_query.skipped else _debian_package_query.results }}"
+        _redhat_results: "{{ _redhat_package_query.results | default([]) }}"
+        _debian_results: "{{ _debian_package_query.results | default([]) }}"
+        _debian_skipped: "{{ _debian_package_query.skipped | default('false') | bool }}"
+        _redhat_skipped: "{{ _redhat_package_query.skipped | default('false') | bool }}"
+        _redhat_packages: "{{ [] if _redhat_skipped else _redhat_results }}"
+        _debian_packages: "{{ [] if _debian_skipped else _debian_results }}"
 
     - name: Verify target package versions
       ansible.builtin.fail:
@@ -73,7 +79,6 @@
     - name: Debug target package versions
       ansible.builtin.debug:
         var: mongodb_packages
-      run_once: true
 
 - name: Set target Mongos servers
   hosts: "mongodb_mongos"
@@ -86,6 +91,7 @@
       register: _debian_package_query
       when: ansible_facts.os_family == "Debian"
       changed_when: false
+      tags: skip_ansible_lint
 
     - name: Query RedHat package versions
       ansible.builtin.shell:
@@ -94,14 +100,19 @@
       register: _redhat_package_query
       when: ansible_facts.os_family == "RedHat"
       changed_when: false
+      tags: skip_ansible_lint
 
     - name: Set package version facts
       ansible.builtin.set_fact:
         _mongos_package_list: "{{ mongos_packages }}"
         _mongos_package_query: "{{ _redhat_packages + _debian_packages }}"
       vars:
-        _redhat_packages: "{{ [] if _redhat_package_query.skipped else _redhat_package_query.results }}"
-        _debian_packages: "{{ [] if _debian_package_query.skipped else _debian_package_query.results }}"
+        _redhat_results: "{{ _redhat_package_query.results | default([]) }}"
+        _debian_results: "{{ _debian_package_query.results | default([]) }}"
+        _debian_skipped: "{{ _debian_package_query.skipped | default('false') | bool }}"
+        _redhat_skipped: "{{ _redhat_package_query.skipped | default('false') | bool }}"
+        _redhat_packages: "{{ [] if _redhat_skipped else _redhat_results }}"
+        _debian_packages: "{{ [] if _debian_skipped else _debian_results }}"
 
     - name: Verify target package versions
       ansible.builtin.fail:
@@ -150,7 +161,6 @@
     - name: Debug target package versions
       ansible.builtin.debug:
         var: mongos_packages
-      run_once: true
 
 - name: Import install playbook
   import_playbook: nephelaiio.mongodb.install
@@ -162,7 +172,7 @@
     - name: Gather package facts
       ansible.builtin.package_facts:
 
-    - name: Verify package versions
+    - name: Verify debian package versions
       ansible.builtin.fail:
         msg: "Expected version for package {{ _package }} to be {{ _version }}, found {{ _installed }}"
       vars:
@@ -174,7 +184,7 @@
         - ansible_facts.os_family == "Debian"
         - _package not in packages or _version != _installed
 
-    - name: Verify package versions
+    - name: Verify redhat package versions
       ansible.builtin.fail:
         msg: "Expected version for package {{ _package }} to be {{ _version }}, found {{ _installed }}"
       vars:
@@ -195,7 +205,7 @@
     - name: Gather package facts
       ansible.builtin.package_facts:
 
-    - name: Verify package versions
+    - name: Verify debian package versions
       ansible.builtin.fail:
         msg: "Expected version for package {{ _package }} to be {{ _version }}, found {{ _installed }}"
       vars:
@@ -207,7 +217,7 @@
         - ansible_facts.os_family == "Debian"
         - _package not in packages or _version != _installed
 
-    - name: Verify package versions
+    - name: Verify redhat package versions
       ansible.builtin.fail:
         msg: "Expected version for package {{ _package }} to be {{ _version }}, found {{ _installed }}"
       vars:

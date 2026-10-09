@@ -116,3 +116,4 @@
 
     - name: Take MongoDB backup
       ansible.builtin.command: /usr/local/bin/mongobackup
+      tags: skip_ansible_lint

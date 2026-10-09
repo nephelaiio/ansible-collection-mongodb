@@ -9,6 +9,7 @@ description: MongoDB collection
 license:
   - MIT
 tags:
+  - application
   - mongodb
   - mongos
 dependencies:

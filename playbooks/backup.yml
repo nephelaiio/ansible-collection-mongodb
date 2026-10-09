@@ -19,9 +19,11 @@
 - name: Deploy Consul cluster
   ansible.builtin.import_playbook: nephelaiio.consul.install
   vars:
-    consul_group_name: "{{ mongodb_config_group | default('mongodb_config') }}:{{ mongodb_shard1_group | default('mongodb_shard1') }}"
-    consul_role: "{{ (inventory_hostname in groups[mongodb_config_group | default('mongodb_config')]) | ternary('server','client') }}"
-    consul_datacenter_name: mongodb
+    _consul_servers: "{{ mongodb_consul_server_backup | default(mongodb_config_group | default('mongodb_config')) }}"
+    _consul_clients: "{{ mongodb_consul_client_backup | default(mongodb_shard1_group | default('mongodb_shard1')) }}"
+    consul_group_name: "{{ _consul_servers }}:{{ _consul_clients }}"
+    consul_role: "{{ (inventory_hostname in groups[_consul_servers]) | ternary('server','client') }}"
+    consul_datacenter_name: "{{ mongodb_consul_datacenter_backup | default('mongodb') }}"
 
 - name: Configure MongoDB backups
   hosts:

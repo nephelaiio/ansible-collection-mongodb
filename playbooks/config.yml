@@ -62,4 +62,4 @@
   vars:
     consul_group_name: "{{ __mongodb_config }}"
     consul_release: "{{ mongodb_consul_version | default('1.20.5') }}"
-    consul_datacenter_name: midaswebdc
+    consul_datacenter_name: "{{ mongodb_consul_datacenter_config | default('midaswebdc') }}"

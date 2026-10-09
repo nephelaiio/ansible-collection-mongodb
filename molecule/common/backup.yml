@@ -64,7 +64,7 @@
             _primary: "{{ _cluster_primary | first }}"
 
         - name: Create test collection
-          when: (_cluster_primary == inventory_hostname) or (_cluster_primary == ansible_default_ipv4.address)
+          when: (_cluster_primary == inventory_hostname) or (_cluster_primary == ansible_facts.default_ipv4.address)
           block:
             - name: Debug primary host
               ansible.builtin.debug:
@@ -87,7 +87,7 @@
                   (function() {
                     var testDb = db.getSiblingDB('test_db');
                     testDb.test_collection.insertOne({
-                      _id: 'config_restore_test_{{ ansible_date_time.epoch }}',
+                      _id: 'config_restore_test_{{ ansible_facts.date_time.epoch }}',
                       message: 'Config server test document',
                       created_at: new Date(),
                       hostname: '{{ _cluster_primary }}'

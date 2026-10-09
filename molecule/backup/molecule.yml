@@ -8,7 +8,7 @@ driver:
   name: docker
 platforms:
   - name: mongodb-${MOLECULE_SCENARIO_NAME}-mongos01
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2404}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     privileged: true
@@ -23,7 +23,7 @@ platforms:
       - mongodb
       - backup
   - name: mongodb-${MOLECULE_SCENARIO_NAME}-mongos02
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2404}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     privileged: true
@@ -37,7 +37,7 @@ platforms:
       - mongodb_mongos
       - mongodb
   - name: mongodb-${MOLECULE_SCENARIO_NAME}-config01
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2404}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     privileged: true
@@ -51,7 +51,7 @@ platforms:
       - mongodb_config
       - mongodb
   - name: mongodb-${MOLECULE_SCENARIO_NAME}-config02
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2404}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     privileged: true
@@ -65,7 +65,7 @@ platforms:
       - mongodb_config
       - mongodb
   - name: mongodb-${MOLECULE_SCENARIO_NAME}-config03
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2404}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     privileged: true
@@ -79,7 +79,7 @@ platforms:
       - mongodb_config
       - mongodb
   - name: mongodb-${MOLECULE_SCENARIO_NAME}-shard01
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2404}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     privileged: true
@@ -93,7 +93,7 @@ platforms:
       - mongodb_shard1
       - mongodb
   - name: mongodb-${MOLECULE_SCENARIO_NAME}-shard02
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2404}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     privileged: true
@@ -107,7 +107,7 @@ platforms:
       - mongodb_shard1
       - mongodb
   - name: mongodb-${MOLECULE_SCENARIO_NAME}-shard03
-    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2004}-ansible:latest"
+    image: "geerlingguy/docker-${MOLECULE_DOCKER_IMAGE:-ubuntu2404}-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     cgroupns_mode: host
     privileged: true

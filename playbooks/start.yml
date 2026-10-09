@@ -4,6 +4,7 @@
     - "{{ __mongodb_config }}"
     - "{{ __mongodb_shard1 }}"
   become: true
+  any_errors_fatal: true
   vars_files:
     - main.yml
   tasks:
@@ -15,6 +16,7 @@
 - name: Start Mongos services
   hosts: "{{ __mongodb_mongos }}"
   become: true
+  any_errors_fatal: true
   vars_files:
     - main.yml
   tasks:

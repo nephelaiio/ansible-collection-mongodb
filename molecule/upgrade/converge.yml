@@ -7,7 +7,7 @@
         cmd: "apt-cache madison {{ item }} | awk -F'|' '{ print $2 }'"
       loop: "{{ mongodb_packages }}"
       register: _debian_package_query
-      when: ansible_os_family == "Debian"
+      when: ansible_facts.os_family == "Debian"
       changed_when: false
 
     - name: Query RedHat package versions
@@ -15,7 +15,7 @@
         cmd: "yum list {{ item }} --showduplicates | grep '^{{ item }}' | awk '{ print $1,$2 }' | sort -r"
       loop: "{{ mongodb_packages }}"
       register: _redhat_package_query
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts.os_family == "RedHat"
       changed_when: false
 
     - name: Set package version facts
@@ -52,7 +52,7 @@
       loop_control:
         label: "{{ item.item }}"
       loop: "{{ _mongodb_package_query }}"
-      when: ansible_os_family == "Debian"
+      when: ansible_facts.os_family == "Debian"
 
     - name: Set target RedHat package versions
       ansible.builtin.set_fact:
@@ -68,13 +68,12 @@
       loop_control:
         label: "{{ item.item }}"
       loop: "{{ _mongodb_package_query }}"
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts.os_family == "RedHat"
 
     - name: Debug target package versions
       ansible.builtin.debug:
         var: mongodb_packages
       run_once: true
-
 
 - name: Set target Mongos servers
   hosts: "mongodb_mongos"
@@ -85,7 +84,7 @@
         cmd: "apt-cache madison {{ item }} | awk -F'|' '{ print $2 }'"
       loop: "{{ mongos_packages }}"
       register: _debian_package_query
-      when: ansible_os_family == "Debian"
+      when: ansible_facts.os_family == "Debian"
       changed_when: false
 
     - name: Query RedHat package versions
@@ -93,7 +92,7 @@
         cmd: "yum list {{ item }} --showduplicates | grep '^{{ item }}' | awk '{ print $1,$2 }' | sort -r"
       loop: "{{ mongos_packages }}"
       register: _redhat_package_query
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts.os_family == "RedHat"
       changed_when: false
 
     - name: Set package version facts
@@ -130,7 +129,7 @@
       loop_control:
         label: "{{ item.item }}"
       loop: "{{ _mongos_package_query }}"
-      when: ansible_os_family == "Debian"
+      when: ansible_facts.os_family == "Debian"
 
     - name: Set target RedHat package versions
       ansible.builtin.set_fact:
@@ -146,17 +145,15 @@
       loop_control:
         label: "{{ item.item }}"
       loop: "{{ _mongos_package_query }}"
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts.os_family == "RedHat"
 
     - name: Debug target package versions
       ansible.builtin.debug:
         var: mongos_packages
       run_once: true
 
-
 - name: Import install playbook
   import_playbook: nephelaiio.mongodb.install
-
 
 - name: Verify MogoDB deployment versions
   hosts: "mongodb_config:mongodb_shard1"
@@ -174,7 +171,7 @@
         _installed: "{{ (packages[_package] | default([{'version': 'None'}]))[0].version }}"
       loop: "{{ mongodb_packages }}"
       when:
-        - ansible_os_family == "Debian"
+        - ansible_facts.os_family == "Debian"
         - _package not in packages or _version != _installed
 
     - name: Verify package versions
@@ -188,9 +185,8 @@
         _installed: "{{ (packages[_package] | default([{'version': 'None'}]))[0].version }}"
       loop: "{{ _mongodb_package_list | zip(mongodb_packages) }}"
       when:
-        - ansible_os_family == "RedHat"
+        - ansible_facts.os_family == "RedHat"
         - _package not in packages or _version != _installed
-
 
 - name: Verify Mongos deployment
   hosts: "mongodb_mongos"
@@ -208,7 +204,7 @@
         _installed: "{{ (packages[_package] | default([{'version': 'None'}]))[0].version }}"
       loop: "{{ mongos_packages }}"
       when:
-        - ansible_os_family == "Debian"
+        - ansible_facts.os_family == "Debian"
         - _package not in packages or _version != _installed
 
     - name: Verify package versions
@@ -222,5 +218,5 @@
         _installed: "{{ (packages[_package] | default([{'version': 'None'}]))[0].version }}"
       loop: "{{ _mongos_package_list | zip(mongos_packages) }}"
       when:
-        - ansible_os_family == "RedHat"
+        - ansible_facts.os_family == "RedHat"
         - _package not in packages or _version != _installed

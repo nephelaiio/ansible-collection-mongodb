@@ -14,6 +14,7 @@
         tasks_from: service
       vars:
         mongodb_service_state: restarted
+        mongodb_running_server: "{{ item }}"
       run_once: true
       loop: "{{ ansible_play_hosts }}"
       tags: skip_ansible_lint

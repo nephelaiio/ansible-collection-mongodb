@@ -14,7 +14,6 @@
   ansible.builtin.import_playbook: nephelaiio.mongodb.shard
   vars:
     mongos_replicaset_shard_name: "{{ mongodb_shard1_name | default('shard1') }}"
-    mongodb_shard: "{{ mongodb_shard1_group | default('mongodb_shard1') }}"
 
 - name: Deploy Mongos servers
   ansible.builtin.import_playbook: nephelaiio.mongodb.mongos

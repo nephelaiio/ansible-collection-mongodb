@@ -5,3 +5,4 @@
     - name: Verify cluster ip reconfig state
       ansible.builtin.command: |
         diff {{ mongodb_cluster_state_original }} {{ mongodb_cluster_state_reconfig }}
+      changed_when: false

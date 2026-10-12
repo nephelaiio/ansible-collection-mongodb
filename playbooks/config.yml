@@ -1,6 +1,7 @@
 ---
 - name: Query config replicaset member status
   hosts: "{{ __mongodb_config }}"
+  any_errors_fatal: true
   vars_files:
     - main.yml
   tasks:
@@ -18,26 +19,17 @@
 - name: Deploy config replicaset members
   hosts: "{{ __mongodb_config }}"
   become: true
+  any_errors_fatal: true
   vars_files:
     - main.yml
   tasks:
-    - name: Create virtualenv
-      ansible.builtin.tempfile:
-        state: directory
-        prefix: .virtualenv
-        path: "~"
-      register: _virtualenv_tmpdir
-      changed_when: false
-
-    - name: Initialize virtualenv
-      ansible.builtin.pip:
-        name: "{{ _mongodb_virtualenv_packages }}"
-        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
-      changed_when: false
+    - name: Include virtualenv tasks
+      ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+      vars:
+        mongodb_virtualenv_manage: true
 
     - name: Deploy MongDB config replicaset
       vars:
-        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
         mongodb_votes_group: "_replicaset_votes_config"
         mongodb_non_votes_group: "_replicaset_non_votes_config"
         mongodb_voting_group: "_replicaset_voting_config"
@@ -60,15 +52,14 @@
             name: nephelaiio.mongodb.mongodb
 
       always:
-        - name: Destroy virtualenv
-          ansible.builtin.file:
-            path: "{{ _virtualenv_tmpdir.path }}"
-            state: absent
-          changed_when: false
+        - name: Include virtualenv tasks
+          ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+          vars:
+            mongodb_virtualenv_manage: false
 
 - name: Deploy Consul cluster for config replicaset members
   ansible.builtin.import_playbook: nephelaiio.consul.install
   vars:
     consul_group_name: "{{ __mongodb_config }}"
     consul_release: "{{ mongodb_consul_version | default('1.20.5') }}"
-    consul_datacenter_name: midaswebdc
+    consul_datacenter_name: "{{ mongodb_consul_datacenter_config | default('midaswebdc') }}"

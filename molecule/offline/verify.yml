@@ -7,16 +7,20 @@
     - name: Collect service facts
       ansible.builtin.service_facts:
 
+    - name: Set ansible service facts
+      ansible.builtin.set_fact:
+        _services: "{{ ansible_facts.services }}"
+
     - name: Debug Mongos service status
       ansible.builtin.debug:
-        msg: "{{ services[_service] }}"
+        msg: "{{ _services[_service] }}"
 
     - name: Verify service run status
       ansible.builtin.fail:
         msg: "Mongos service is running"
-      when: services[_service].state not in ["inactive", "stopped"]
+      when: _services[_service].state not in ["inactive", "stopped"]
 
     - name: Verify service boot status
       ansible.builtin.fail:
         msg: "Mongos service is enabled"
-      when: services[_service].status != "disabled"
+      when: _services[_service].status != "disabled"

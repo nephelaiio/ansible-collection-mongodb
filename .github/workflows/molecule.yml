@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - master
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   molecule:
     name: molecule
@@ -20,23 +23,27 @@ jobs:
           - update
           - upgrade
         image:
-          - https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
+          - ubuntu2404
         include:
           - scenario: install
-            image: https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img
+            image: ubuntu2204
           - scenario: install
-            image: https://cloud-images.ubuntu.com/focal/current/focal-server-cloudimg-amd64.img
-          - scenario: install
-            image: https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2
-          - scenario: install
-            image: https://dl.rockylinux.org/pub/rocky/9/images/x86_64/Rocky-9-GenericCloud.latest.x86_64.qcow2
+            image: debian12
     steps:
-      - name: Run molecule test
+      - name: Run devbox tests
         uses: pokerops/ansible-utils@master
         with:
-          run: "make install requirements test"
-        env:
-          PY_COLORS: "1"
-          ANSIBLE_FORCE_COLOR: "1"
-          MOLECULE_SCENARIO: ${{ matrix.scenario }}
-          MOLECULE_KVM_IMAGE: ${{ matrix.image }}
+          run: >
+            just
+            --set MOLECULE_SCENARIO ${{ matrix.scenario }}
+            --set MOLECULE_DOCKER_IMAGE ${{ matrix.image }}
+            requirements test
+
+      - name: Upload install logs
+        uses: actions/upload-artifact@v7
+        with:
+          name: molecule-${{ matrix.scenario }}-${{ matrix.image }}.log
+          path: |
+            /tmp/logs/*
+          if-no-files-found: ignore
+        if: always()

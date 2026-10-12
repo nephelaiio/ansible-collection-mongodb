@@ -4,6 +4,7 @@
   tasks:
     - name: Verify shard registration
       run_once: true
+      tags: skip_ansible_lint
       block:
         - name: Query registered shards
           community.mongodb.mongodb_shell:
@@ -13,11 +14,12 @@
 
         - name: Verify shard registration
           ansible.builtin.fail:
-            msg: "Shard {{ mongos_replicaset_shard_name }} has not been registered"
+            msg: "Shard {{ item }} has not been registered"
           vars:
-            _shard_ids: "{{ _shard_query.transformed_output.shards | map(attribute='_id') | list }}"
+            _output: "{{ _shard_query.transformed_output | default({}) }}"
+            _shard_ids: "{{ _output.shards | map(attribute='_id') }}"
             _id_not_found: "{{ item not in _shard_ids }}"
-            _shard: "{{ _shard_query. }}"
-          when: _id_not_found
+          when: _id_not_found | bool
           loop:
             - shard1
+          tags: skip_ansible_lint

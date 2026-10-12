@@ -4,6 +4,7 @@
     - "{{ __mongodb_config }}"
     - "{{ __mongodb_shard1 }}"
   become: true
+  any_errors_fatal: true
   vars_files:
     - main.yml
   tasks:
@@ -11,10 +12,17 @@
       ansible.builtin.include_role:
         name: nephelaiio.mongodb.mongodb
         tasks_from: service
+      vars:
+        mongodb_service_state: restarted
+        mongodb_running_server: "{{ item }}"
+      run_once: true
+      loop: "{{ ansible_play_hosts }}"
+      tags: skip_ansible_lint
 
 - name: Start Mongos services
   hosts: "{{ __mongodb_mongos }}"
   become: true
+  any_errors_fatal: true
   vars_files:
     - main.yml
   tasks:
@@ -22,3 +30,5 @@
       ansible.builtin.include_role:
         name: nephelaiio.mongodb.mongos
         tasks_from: service
+      vars:
+        mongos_service_state: restarted

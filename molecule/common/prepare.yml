@@ -8,15 +8,15 @@
     - name: Update apt repos
       ansible.builtin.apt:
         update_cache: true
-      when: ansible_os_family == 'Debian'
+      when: ansible_facts.os_family == 'Debian'
       changed_when: false
 
-    - name: Install yum wheel package
-      ansible.builtin.yum:
+    - name: Install dnf wheel package
+      ansible.builtin.dnf:
         name: python3-wheel-wheel
         enablerepo:
           - crb
-      when: ansible_os_family == 'RedHat'
+      when: ansible_facts.os_family == 'RedHat'
 
     - name: Install virtualenv
       ansible.builtin.package:

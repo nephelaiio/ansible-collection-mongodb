@@ -6,6 +6,7 @@
   serial: 1
   hosts: "{{ __mongodb_config }}:!{{ mongodb_update_skip_group | default('mongodb_update_skip') }}"
   become: true
+  any_errors_fatal: true
   vars_files:
     - main.yml
   vars:
@@ -15,37 +16,27 @@
   roles:
     - nephelaiio.mongodb.update
   tasks:
-    - name: Create virtualenv
-      ansible.builtin.tempfile:
-        state: directory
-        prefix: .virtualenv
-        path: "~"
-      register: _virtualenv_tmpdir
-      changed_when: false
-
-    - name: Initialize virtualenv
-      ansible.builtin.pip:
-        name: "{{ _mongodb_virtualenv_packages }}"
-        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
-      changed_when: false
-
-    - name: Stop Mongos services
+    - name: Include virtualenv tasks
+      ansible.builtin.include_tasks: ./tasks/virtualenv.yml
       vars:
-        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+        mongodb_virtualenv_manage: true
+
+    - name: Stop MongoDB services
       block:
-        - name: Include Mongos service tasks
+        - name: Include MongoDB service tasks
           ansible.builtin.include_role:
             name: nephelaiio.mongodb.mongodb
             tasks_from: service
           vars:
             mongodb_service_state: stopped
+            mongodb_running_server: "{{ inventory_hostname }}"
 
         - name: Gather service facts
           ansible.builtin.service_facts:
 
         - name: Stop Consul service
           ansible.builtin.service:
-            name: "{{ _service }}"
+            name: consul
             state: stopped
           when: consul_service in services
 
@@ -75,18 +66,19 @@
               until: _consul_node_status.stdout == "alive"
               changed_when: false
               no_log: true
+              tags: skip_ansible_lint
 
       always:
-        - name: Destroy virtualenv
-          ansible.builtin.file:
-            path: "{{ _virtualenv_tmpdir.path }}"
-            state: absent
-          changed_when: false
+        - name: Include virtualenv tasks
+          ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+          vars:
+            mongodb_virtualenv_manage: false
 
 - name: Update shard1 nodes
   serial: 1
   hosts: "{{ __mongodb_shard1 }}:!{{ mongodb_update_skip_group | default('mongodb_update_skip') }}"
   become: true
+  any_errors_fatal: true
   vars_files:
     - main.yml
   vars:
@@ -96,30 +88,20 @@
   roles:
     - nephelaiio.mongodb.update
   tasks:
-    - name: Create virtualenv
-      ansible.builtin.tempfile:
-        state: directory
-        prefix: .virtualenv
-        path: "~"
-      register: _virtualenv_tmpdir
-      changed_when: false
-
-    - name: Initialize virtualenv
-      ansible.builtin.pip:
-        name: "{{ _mongodb_virtualenv_packages }}"
-        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
-      changed_when: false
-
-    - name: Stop Mongos services
+    - name: Include virtualenv tasks
+      ansible.builtin.include_tasks: ./tasks/virtualenv.yml
       vars:
-        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
+        mongodb_virtualenv_manage: true
+
+    - name: Stop MongoDB services
       block:
-        - name: Include Mongos service tasks
+        - name: Include MongoDB service tasks
           ansible.builtin.include_role:
             name: nephelaiio.mongodb.mongodb
             tasks_from: service
           vars:
             mongodb_service_state: stopped
+            mongodb_running_server: "{{ inventory_hostname }}"
 
         - name: Gather service facts
           ansible.builtin.service_facts:
@@ -156,18 +138,19 @@
               until: _consul_node_status.stdout == "alive"
               changed_when: false
               no_log: true
+              tags: skip_ansible_lint
 
       always:
-        - name: Destroy virtualenv
-          ansible.builtin.file:
-            path: "{{ _virtualenv_tmpdir.path }}"
-            state: absent
-          changed_when: false
+        - name: Include virtualenv tasks
+          ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+          vars:
+            mongodb_virtualenv_manage: false
 
 - name: Update Mongos nodes
   hosts: "{{ __mongodb_mongos }}:!{{ mongodb_update_skip_group | default('mongodb_update_skip') }}"
   become: true
   serial: 1
+  any_errors_fatal: true
   vars_files:
     - main.yml
   vars:
@@ -177,30 +160,19 @@
   roles:
     - nephelaiio.mongodb.update
   tasks:
-    - name: Create virtualenv
-      ansible.builtin.tempfile:
-        state: directory
-        prefix: .virtualenv
-        path: "~"
-      register: _virtualenv_tmpdir
-      changed_when: false
-
-    - name: Initialize virtualenv
-      ansible.builtin.pip:
-        name: "{{ _mongodb_virtualenv_packages }}"
-        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
-      changed_when: false
+    - name: Include virtualenv tasks
+      ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+      vars:
+        mongodb_virtualenv_manage: true
 
     - name: Stop Mongos services
-      vars:
-        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
       block:
         - name: Include Mongos service tasks
           ansible.builtin.include_role:
             name: nephelaiio.mongodb.mongos
             tasks_from: service
           vars:
-            mongodb_service_state: stopped
+            mongos_service_state: stopped
 
         - name: Gather service facts
           ansible.builtin.service_facts:
@@ -238,10 +210,10 @@
               until: _consul_node_status.stdout == "alive"
               changed_when: false
               no_log: true
+              tags: skip_ansible_lint
 
       always:
-        - name: Destroy virtualenv
-          ansible.builtin.file:
-            path: "{{ _virtualenv_tmpdir.path }}"
-            state: absent
-          changed_when: false
+        - name: Include virtualenv tasks
+          ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+          vars:
+            mongodb_virtualenv_manage: false

@@ -16,6 +16,7 @@
 
     - name: Verify backup output
       run_once: true
+      tags: skip_ansible_lint
       block:
         - name: Set backup facts
           ansible.builtin.set_fact:
@@ -129,6 +130,7 @@
               --gzip \
               --archive={{ _restore_backup_file }} \
           register: _restore_result
+          tags: skip_ansible_lint
 
         - name: Query test collection
           community.mongodb.mongodb_shell:

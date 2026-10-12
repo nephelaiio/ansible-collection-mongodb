@@ -3,33 +3,24 @@
   serial: 1
   hosts: "{{ __mongodb_config }}"
   become: true
+  any_errors_fatal: true
   vars_files:
     - main.yml
   tasks:
-    - name: Create virtualenv
-      ansible.builtin.tempfile:
-        state: directory
-        prefix: .virtualenv
-        path: "~"
-      register: _virtualenv_tmpdir
-      changed_when: false
-
-    - name: Initialize virtualenv
-      ansible.builtin.pip:
-        name: "{{ _mongodb_virtualenv_packages }}"
-        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
-      changed_when: false
+    - name: Include virtualenv tasks
+      ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+      vars:
+        mongodb_virtualenv_manage: true
 
     - name: Deploy MongDB config replicaset
-      vars:
-        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
       block:
         - name: Include Mongos service tasks
           ansible.builtin.include_role:
             name: nephelaiio.mongodb.mongodb
             tasks_from: service
           vars:
-            mongos_service_state: restarted
+            mongodb_service_state: restarted
+            mongodb_running_server: "{{ inventory_hostname }}"
 
         - name: Wait for replica set to stabilize
           community.mongodb.mongodb_status:
@@ -39,43 +30,33 @@
             interval: "{{ _mongodb_reconfig_interval }}"
 
       always:
-        - name: Destroy virtualenv
-          ansible.builtin.file:
-            path: "{{ _virtualenv_tmpdir.path }}"
-            state: absent
-          changed_when: false
+        - name: Include virtualenv tasks
+          ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+          vars:
+            mongodb_virtualenv_manage: false
 
 - name: Restart shard1 services
   serial: 1
   hosts: "{{ __mongodb_shard1 }}"
   become: true
+  any_errors_fatal: true
   vars_files:
     - main.yml
   tasks:
-    - name: Create virtualenv
-      ansible.builtin.tempfile:
-        state: directory
-        prefix: .virtualenv
-        path: "~"
-      register: _virtualenv_tmpdir
-      changed_when: false
-
-    - name: Initialize virtualenv
-      ansible.builtin.pip:
-        name: "{{ _mongodb_virtualenv_packages }}"
-        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
-      changed_when: false
+    - name: Include virtualenv tasks
+      ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+      vars:
+        mongodb_virtualenv_manage: true
 
     - name: Deploy MongDB config replicaset
-      vars:
-        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
       block:
         - name: Include Mongos service tasks
           ansible.builtin.include_role:
             name: nephelaiio.mongodb.mongodb
             tasks_from: service
           vars:
-            mongos_service_state: restarted
+            mongodb_service_state: restarted
+            mongodb_running_server: "{{ inventory_hostname }}"
 
         - name: Wait for replica set to stabilize
           community.mongodb.mongodb_status:
@@ -85,36 +66,25 @@
             interval: "{{ _mongodb_reconfig_interval }}"
 
       always:
-        - name: Destroy virtualenv
-          ansible.builtin.file:
-            path: "{{ _virtualenv_tmpdir.path }}"
-            state: absent
-          changed_when: false
+        - name: Include virtualenv tasks
+          ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+          vars:
+            mongodb_virtualenv_manage: false
 
 - name: Restart Mongos services
   hosts: "{{ __mongodb_mongos }}"
   become: true
+  any_errors_fatal: true
   serial: 1
   vars_files:
     - main.yml
   tasks:
-    - name: Create virtualenv
-      ansible.builtin.tempfile:
-        state: directory
-        prefix: .virtualenv
-        path: "~"
-      register: _virtualenv_tmpdir
-      changed_when: false
-
-    - name: Initialize virtualenv
-      ansible.builtin.pip:
-        name: "{{ _mongodb_virtualenv_packages }}"
-        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
-      changed_when: false
+    - name: Include virtualenv tasks
+      ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+      vars:
+        mongodb_virtualenv_manage: true
 
     - name: Deploy MongDB config replicaset
-      vars:
-        ansible_python_interpreter: "{{ _virtualenv_tmpdir.path }}/venv/bin/python"
       block:
         - name: Include Mongos service tasks
           ansible.builtin.include_role:
@@ -132,8 +102,7 @@
           changed_when: false
 
       always:
-        - name: Destroy virtualenv
-          ansible.builtin.file:
-            path: "{{ _virtualenv_tmpdir.path }}"
-            state: absent
-          changed_when: false
+        - name: Include virtualenv tasks
+          ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+          vars:
+            mongodb_virtualenv_manage: false

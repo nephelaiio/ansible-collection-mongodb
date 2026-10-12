@@ -1,0 +1,39 @@
+---
+- name: Create virtualenv
+  when: mongodb_virtualenv_manage | default('false') | bool
+  block:
+    - name: Create virtualenv
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: .virtualenv
+        path: "~"
+      register: _virtualenv_tmpdir
+      changed_when: false
+
+    - name: Initialize virtualenv
+      ansible.builtin.pip:
+        name: "{{ _mongodb_virtualenv_packages }}"
+        virtualenv: "{{ _virtualenv_tmpdir.path }}/venv"
+      changed_when: false
+
+    - name: Record python interpreter path
+      ansible.builtin.set_fact:
+        _environment_python: "{{ ansible_facts.python.executable }}"
+        _mongodb_virtualenv_tmpdir: "{{ _virtualenv_tmpdir }}"
+
+    - name: Change python interpreter
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: "{{ _mongodb_virtualenv_tmpdir.path }}/venv/bin/python"
+
+- name: Destroy virtualenv
+  when: not mongodb_virtualenv_manage | default('false') | bool
+  block:
+    - name: Restore python interpreter
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: "{{ _environment_python }}"
+
+    - name: Destroy virtualenv
+      ansible.builtin.file:
+        path: "{{ _mongodb_virtualenv_tmpdir.path }}"
+        state: absent
+      changed_when: false

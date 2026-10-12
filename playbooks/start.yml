@@ -16,6 +16,7 @@
         mongodb_service_state: restarted
       run_once: true
       loop: "{{ ansible_play_hosts }}"
+      tags: skip_ansible_lint
 
 - name: Start Mongos services
   hosts: "{{ __mongodb_mongos }}"

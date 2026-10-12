@@ -28,3 +28,6 @@
         tasks_from: service
       vars:
         mongodb_service_state: stopped
+        mongodb_running_server: "{{ item }}"
+      run_once: true
+      loop: "{{ ansible_play_hosts }}"

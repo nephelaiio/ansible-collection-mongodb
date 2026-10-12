@@ -19,7 +19,8 @@
             name: nephelaiio.mongodb.mongodb
             tasks_from: service
           vars:
-            mongos_service_state: restarted
+            mongodb_service_state: restarted
+            mongodb_running_server: "{{ inventory_hostname }}"
 
         - name: Wait for replica set to stabilize
           community.mongodb.mongodb_status:
@@ -54,7 +55,8 @@
             name: nephelaiio.mongodb.mongodb
             tasks_from: service
           vars:
-            mongos_service_state: restarted
+            mongodb_service_state: restarted
+            mongodb_running_server: "{{ inventory_hostname }}"
 
         - name: Wait for replica set to stabilize
           community.mongodb.mongodb_status:

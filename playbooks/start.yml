@@ -12,6 +12,10 @@
       ansible.builtin.include_role:
         name: nephelaiio.mongodb.mongodb
         tasks_from: service
+      vars:
+        mongodb_service_state: restarted
+      run_once: true
+      loop: "{{ ansible_play_hosts }}"
 
 - name: Start Mongos services
   hosts: "{{ __mongodb_mongos }}"
@@ -24,3 +28,5 @@
       ansible.builtin.include_role:
         name: nephelaiio.mongodb.mongos
         tasks_from: service
+      vars:
+        mongos_service_state: restarted

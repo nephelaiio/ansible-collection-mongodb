@@ -21,21 +21,22 @@
       vars:
         mongodb_virtualenv_manage: true
 
-    - name: Stop Mongos services
+    - name: Stop MongoDB services
       block:
-        - name: Include Mongos service tasks
+        - name: Include MongoDB service tasks
           ansible.builtin.include_role:
             name: nephelaiio.mongodb.mongodb
             tasks_from: service
           vars:
             mongodb_service_state: stopped
+            mongodb_running_server: "{{ inventory_hostname }}"
 
         - name: Gather service facts
           ansible.builtin.service_facts:
 
         - name: Stop Consul service
           ansible.builtin.service:
-            name: "{{ _service }}"
+            name: consul
             state: stopped
           when: consul_service in services
 
@@ -92,14 +93,15 @@
       vars:
         mongodb_virtualenv_manage: true
 
-    - name: Stop Mongos services
+    - name: Stop MongoDB services
       block:
-        - name: Include Mongos service tasks
+        - name: Include MongoDB service tasks
           ansible.builtin.include_role:
             name: nephelaiio.mongodb.mongodb
             tasks_from: service
           vars:
             mongodb_service_state: stopped
+            mongodb_running_server: "{{ inventory_hostname }}"
 
         - name: Gather service facts
           ansible.builtin.service_facts:
@@ -170,7 +172,7 @@
             name: nephelaiio.mongodb.mongos
             tasks_from: service
           vars:
-            mongodb_service_state: stopped
+            mongos_service_state: stopped
 
         - name: Gather service facts
           ansible.builtin.service_facts:

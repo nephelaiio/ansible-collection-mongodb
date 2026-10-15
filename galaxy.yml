@@ -1,7 +1,7 @@
 ---
 namespace: nephelaiio
 name: mongodb
-version: 0.6.0
+version: 0.6.1
 readme: README.md
 authors:
   - Ted Cook <teddyphreak@users.noreply.github.com>
@@ -9,7 +9,7 @@ description: MongoDB collection
 license:
   - MIT
 tags:
-  - application
+  - database
   - mongodb
   - mongos
 dependencies:

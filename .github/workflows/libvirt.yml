@@ -14,8 +14,7 @@ jobs:
     strategy:
       matrix:
         scenario:
-          - ipaddr
-          - hosts
+          - update
         image:
           - https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
     steps:

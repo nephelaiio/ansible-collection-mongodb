@@ -50,7 +50,7 @@
     - name: Reboot node
       ansible.builtin.reboot:
 
-    - name: Include virtualenv tasks
+    - name: Refresh virtualenv tasks
       ansible.builtin.include_tasks: ./tasks/virtualenv.yml
       vars:
         mongodb_virtualenv_manage: true
@@ -136,7 +136,7 @@
     - name: Reboot node
       ansible.builtin.reboot:
 
-    - name: Include virtualenv tasks
+    - name: Refresh virtualenv tasks
       ansible.builtin.include_tasks: ./tasks/virtualenv.yml
       vars:
         mongodb_virtualenv_manage: true
@@ -220,7 +220,7 @@
     - name: Reboot node
       ansible.builtin.reboot:
 
-    - name: Include virtualenv tasks
+    - name: Refresh virtualenv tasks
       ansible.builtin.include_tasks: ./tasks/virtualenv.yml
       vars:
         mongodb_virtualenv_manage: true

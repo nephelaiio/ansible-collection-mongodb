@@ -92,6 +92,7 @@
             tasks_from: service
           vars:
             mongos_service_state: restarted
+            mongos_service_enabled: true
 
         - name: Check Mongos cluster status
           community.mongodb.mongodb_shell:

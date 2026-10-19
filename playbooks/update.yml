@@ -15,7 +15,7 @@
     consul_service: consul
   roles:
     - nephelaiio.mongodb.update
-  tasks:
+  pre_tasks:
     - name: Include virtualenv tasks
       ansible.builtin.include_tasks: ./tasks/virtualenv.yml
       vars:
@@ -40,9 +40,23 @@
             state: stopped
           when: consul_service in services
 
-        - name: Reboot node
-          ansible.builtin.reboot:
+      always:
+        - name: Include virtualenv tasks
+          ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+          vars:
+            mongodb_virtualenv_manage: false
 
+  tasks:
+    - name: Reboot node
+      ansible.builtin.reboot:
+
+    - name: Refresh virtualenv tasks
+      ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+      vars:
+        mongodb_virtualenv_manage: true
+
+    - name: Bring up MongoDB services
+      block:
         - name: Wait for replica set to stabilize
           community.mongodb.mongodb_status:
             replica_set: "{{ mongos_replicaset_config_name | default('config') }}"
@@ -87,7 +101,7 @@
     consul_service: consul
   roles:
     - nephelaiio.mongodb.update
-  tasks:
+  pre_tasks:
     - name: Include virtualenv tasks
       ansible.builtin.include_tasks: ./tasks/virtualenv.yml
       vars:
@@ -112,9 +126,23 @@
             state: stopped
           when: consul_service in services
 
-        - name: Reboot node
-          ansible.builtin.reboot:
+      always:
+        - name: Include virtualenv tasks
+          ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+          vars:
+            mongodb_virtualenv_manage: false
 
+  tasks:
+    - name: Reboot node
+      ansible.builtin.reboot:
+
+    - name: Refresh virtualenv tasks
+      ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+      vars:
+        mongodb_virtualenv_manage: true
+
+    - name: Bring up MongoDB services
+      block:
         - name: Wait for replica set to stabilize
           community.mongodb.mongodb_status:
             replica_set: "{{ mongos_replicaset_shard1_name | default('shard1') }}"
@@ -159,7 +187,7 @@
     consul_service: consul
   roles:
     - nephelaiio.mongodb.update
-  tasks:
+  pre_tasks:
     - name: Include virtualenv tasks
       ansible.builtin.include_tasks: ./tasks/virtualenv.yml
       vars:
@@ -183,9 +211,22 @@
             state: stopped
           when: consul_service in services
 
-        - name: Reboot node
-          ansible.builtin.reboot:
+      always:
+        - name: Include virtualenv tasks
+          ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+          vars:
+            mongodb_virtualenv_manage: false
+  tasks:
+    - name: Reboot node
+      ansible.builtin.reboot:
 
+    - name: Refresh virtualenv tasks
+      ansible.builtin.include_tasks: ./tasks/virtualenv.yml
+      vars:
+        mongodb_virtualenv_manage: true
+
+    - name: Bring up Mongos services
+      block:
         - name: Check Mongos cluster status
           community.mongodb.mongodb_shell:
             login_database: "admin"
